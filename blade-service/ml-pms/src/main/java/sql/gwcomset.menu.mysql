@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296372139066331143', 0, 'gwcomset', 'pms', 'menu', '/pms/gwcomset', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296372139066331144', '1296372139066331143', 'gwcomset_add', '新增', 'add', '/pms/gwcomset/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296372139066331145', '1296372139066331143', 'gwcomset_edit', '修改', 'edit', '/pms/gwcomset/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296372139066331146', '1296372139066331143', 'gwcomset_delete', '删除', 'delete', '/api/ml-pms/gwcomset/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296372139066331147', '1296372139066331143', 'gwcomset_view', '查看', 'view', '/pms/gwcomset/view', 'file-text', 4, 2, 2, 1, NULL, 0);

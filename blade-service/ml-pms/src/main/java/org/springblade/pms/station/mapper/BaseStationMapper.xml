@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.pms.station.mapper.BaseStationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="baseStationResultMap" type="org.springblade.pms.station.entity.BaseStation">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="gw_id" property="gwId"/>
+        <result column="station_no" property="stationNo"/>
+        <result column="station_name" property="stationName"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="county_code" property="countyCode"/>
+        <result column="county_name" property="countyName"/>
+        <result column="address" property="address"/>
+        <result column="lng" property="lng"/>
+        <result column="lat" property="lat"/>
+
+        <result column="property" property="property"/>
+        <result column="dutyer" property="dutyer"/>
+        <result column="phone" property="phone"/>
+    </resultMap>
+
+
+    <select id="selectBaseStationPage" resultType="org.springblade.pms.station.dto.BaseStationDTO">
+        select * from t_base_station s WHERE is_deleted = 0
+        <if test="baseStation.gwId != null">
+            and gw_id=#{baseStation.gwId}
+        </if>
+        <if test="baseStation.stationNo != null">
+            and station_no=#{baseStation.stationNo}
+        </if>
+        <if test="baseStation.stationName != null">
+            and station_name like CONCAT(CONCAT('%', #{baseStation.stationName}), '%')
+        </if>
+        <if test="baseStation.deviceName != null">
+            and device_name like CONCAT(CONCAT('%', #{baseStation.deviceName}), '%')
+        </if>
+        <if test="baseStation.cityCode != null">
+        and city_code=#{baseStation.cityCode}
+        </if>
+        <if test="baseStation.provinceCode != null">
+            and province_code=#{baseStation.provinceCode}
+        </if>
+        <if test="baseStation.countyCode != null">
+            and county_code=#{baseStation.countyCode}
+        </if>
+        order by s.create_time asc
+    </select>
+    <select id="selectStationsByDeviceIds" resultType="org.springblade.pms.station.vo.BaseStationVO"
+            parameterType="java.util.Set">
+        select s.*
+        from
+        t_base_station s
+        where  s.gw_id in
+        <foreach collection="deviceIds" item="did" index="index" open="("
+                 close=")" separator=",">
+            #{did,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+    <select id="selectStationsByAreaCode" resultType="org.springblade.pms.station.entity.BaseStation"
+            parameterType="java.lang.String">
+         select s.*
+        from
+        t_base_station s where is_deleted = 0
+        <if test="areaCode != null and areaCode != ''">
+            and (city_code=#{areaCode} or province_code=#{areaCode} or county_code=#{areaCode}
+            or id=#{areaCode}
+            )
+        </if>
+    </select>
+
+    <select id="getDistribution" resultType="org.springblade.dto.NameValue"
+            parameterType="java.util.Set">
+        SELECT COUNT(province_code) VALUE, province_name AS NAME,province_code code FROM t_base_station t WHERE is_deleted = 0
+        and province_code in
+        <foreach collection="areaCodes" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY province_code
+        union all
+        SELECT COUNT(city_code) VALUE, city_name AS NAME,city_code code FROM t_base_station t WHERE is_deleted = 0
+        and city_code in
+        <foreach collection="areaCodes" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY city_code
+        union all
+        SELECT COUNT(county_code) VALUE, county_name AS NAME,county_code code FROM t_base_station t WHERE is_deleted = 0
+        and county_code in
+        <foreach collection="areaCodes" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY county_code
+    </select>
+    <select id="getChildAreaStationList" resultType="org.springblade.pms.station.entity.SysArea"
+            parameterType="java.lang.String">
+        SELECT DISTINCT a.* FROM t_sys_area a ,t_base_station s WHERE s.is_deleted = 0
+       AND (a.`area_code`= s.`province_code` OR a.`area_code`= s.`city_code` OR a.`area_code`= s.`county_code`)
+        <if test="areaCode != null">
+            and a.parent_id=#{areaCode}
+        </if>
+        order by a.order_num
+    </select>
+
+</mapper>

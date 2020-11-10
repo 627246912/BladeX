@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.diagram.mapper.DiagramCameraMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="diagramCameraResultMap" type="org.springblade.energy.diagram.entity.DiagramCamera">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="diagram_id" property="diagramId"/>
+        <result column="name" property="name"/>
+        <result column="src" property="src"/>
+
+        <result column="video_ip" property="videoIp"/>
+        <result column="video_name" property="videoName"/>
+        <result column="video_status" property="videoStatus"/>
+        <result column="video_account" property="videoAccount"/>
+        <result column="video_pwd" property="videoPwd"/>
+        <result column="media_server_ip" property="mediaServerIp"/>
+    </resultMap>
+
+
+    <select id="selectDiagramCameraPage" resultMap="diagramCameraResultMap">
+        select * from t_diagram_camera where is_deleted = 0
+        <if test="diagramCamera.id != null">
+            and id=#{diagramCamera.id}
+        </if>
+        <if test="diagramCamera.diagramId != null">
+           and diagram_id=#{diagramCamera.diagramId}
+        </if>
+        <if test="diagramCamera.stationId != null">
+            and station_id=#{diagramCamera.stationId}
+        </if>
+        <if test="diagramCamera.siteId != null">
+            and site_id=#{diagramCamera.siteId}
+        </if>
+        <if test="diagramCamera.name != null">
+            and name=#{diagramCamera.name}
+        </if>
+        <if test="diagramCamera.src != null">
+            and src=#{diagramCamera.src}
+        </if>
+    </select>
+
+
+    <delete id="delDiagramCameraByDiagramId" parameterType="java.util.List">
+        delete FROM t_diagram_camera where diagram_id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+
+</mapper>

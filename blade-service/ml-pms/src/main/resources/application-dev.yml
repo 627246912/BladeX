@@ -1,0 +1,17 @@
+#服务器端口
+server:
+  port: 8021
+  servlet:
+    #拦截路径
+    context-path: /
+
+#数据源配置
+spring:
+  datasource:
+    url: ${blade.datasource.pms.dev.url}
+    username: ${blade.datasource.pms.dev.username}
+    password: ${blade.datasource.pms.dev.password}
+#
+push:
+  base:
+    url: ${push.base.url}

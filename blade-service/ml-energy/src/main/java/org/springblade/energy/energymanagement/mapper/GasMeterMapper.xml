@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.energymanagement.mapper.GasMeterMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="GasMeterResultMap" type="org.springblade.energy.energymanagement.entity.GasMeter">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+        <result column="item_id" property="itemId"/>
+        <result column="meter_type" property="meterType"/>
+        <result column="meter_time" property="meterTime"/>
+
+        <result column="gas_company_id" property="gasCompanyId"/>
+        <result column="low_season" property="lowSeason"/>
+        <result column="low_season_price" property="lowSeasonPrice"/>
+        <result column="busy_season" property="busySeason"/>
+        <result column="busy_season_price" property="busySeasonPrice"/>
+
+    </resultMap>
+
+    <resultMap extends="GasMeterResultMap" id="GasMeterDtoMap" type="org.springblade.energy.energymanagement.dto.GasMeterDto">
+        <result column="station_id" property="stationId" />
+        <result column="site_id" property="siteId" />
+        <result column="stationName" property="stationName" />
+        <result column="siteName" property="siteName" />
+        <result column="productcname" property="productcname" />
+
+        <result column="deptName" property="deptName" />
+        <result column="grade" property="grade" />
+        <result column="dept_id" property="deptId" />
+    </resultMap>
+
+    <select id="selectGasMeterPage" resultMap="GasMeterDtoMap">
+        SELECT distinct m.*,p.station_id,p.productcname,
+        (SELECT t.name FROM t_station t WHERE t.id=p.`station_id`) AS stationName,
+        p.`site_id`,(SELECT site_name FROM t_site t WHERE t.id=p.`site_id`) AS siteName,
+        p.grade,i.dept_id
+        FROM `t_diagram_product` p,`t_diagram_item` i ,`t_diagram` d,t_gas_meter m
+        WHERE p.`id`=i.`diagram_product_id`
+        AND d.id=i.`diagram_id`
+        AND p.id=i.`diagram_product_id`
+        AND m.`item_id`=i.`item_id`
+        <if test="dto.stationId != null">
+            AND p.`station_id`=#{dto.stationId}
+        </if>
+        <if test="dto.siteId != null">
+            AND p.`site_id`=#{dto.siteId}
+        </if>
+
+        <if test="dto.grade != null">
+            AND p.`grade`=#{dto.grade}
+        </if>
+    </select>
+
+    <select id="getGasMeterItem" resultMap="GasMeterDtoMap" parameterType="java.util.Map">
+        SELECT distinct m.*,p.station_id,p.productcname,
+        (SELECT t.name FROM t_station t WHERE t.id=p.`station_id`) AS stationName,
+        p.`site_id`,(SELECT site_name FROM t_site t WHERE t.id=p.`site_id`) AS siteName,
+        p.grade,i.dept_id
+        FROM `t_diagram_product` p,`t_diagram_item` i ,`t_diagram` d,t_gas_meter m
+        WHERE p.`id`=i.`diagram_product_id`
+        AND d.id=i.`diagram_id`
+        AND p.id=i.`diagram_product_id`
+        AND m.`item_id`=i.`item_id`
+
+        <if test="stationId != null">
+            AND p.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND p.`site_id`=#{siteId}
+        </if>
+        <if test="productDtype != null">
+            AND p.`product_dtype`=#{productDtype}
+        </if>
+        <if test="productDtypes != null">
+            and product_dtype in
+            <foreach collection="productDtypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="diagramType != null">
+            AND d.`diagram_type`=#{diagramType}
+        </if>
+        <if test="propertyCode != null">
+            AND i.`property_code`=#{propertyCode}
+        </if>
+        <if test="propertyCodes != null">
+            and property_code in
+            <foreach collection="propertyCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="grade != null">
+            AND p.`grade`=#{grade}
+        </if>
+    </select>
+
+
+
+</mapper>

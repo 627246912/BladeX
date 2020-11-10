@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.station.mapper.SiteMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="siteResultMap" type="org.springblade.energy.runningmanagement.station.entity.Site">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="site_name" property="siteName"/>
+        <result column="type_id" property="typeId"/>
+        <result column="type_name" property="typeName"/>
+        <result column="station_id" property="stationId"/>
+        <result column="project_id" property="projectId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="site_rank" property="siteRank"/>
+        <result column="remark" property="remark"/>
+        <result column="dept_id" property="deptId"/>
+
+
+    </resultMap>
+    <resultMap extends="siteResultMap" id="siteVOResultMap" type="org.springblade.energy.runningmanagement.station.vo.SiteVO">
+        <result column="stationName" property="stationName" />
+        <result column="parentNme" property="parentNme" />
+
+    </resultMap>
+
+    <resultMap id="siteTreeResultMap" type="org.springblade.energy.runningmanagement.station.vo.SiteTree">
+        <id column="id" property="id"/>
+        <result column="site_name" property="siteName"/>
+        <result column="station_id" property="stationId"/>
+        <result column="stationName" property="stationName" />
+        <result column="parent_id" property="parentId"/>
+        <result column="parentNme" property="parentNme" />
+        <collection property="children" select="querySiteByPid" column="id"></collection>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, create_user, create_dept, create_time, update_user,update_time,status,is_deleted,site_name,
+    type_id,type_name,station_id,project_id,parent_id,site_rank,remark
+  </sql>
+
+    <select id="selectSitePage" resultMap="siteVOResultMap">
+        SELECT s.*,t.`name` AS stationNme,(SELECT e.site_name FROM t_site e WHERE e.id=s.`parent_id`) AS parentNme
+ FROM t_site s, t_station t WHERE s.is_deleted = 0 AND s.station_id=t.id
+ order by s.create_time DESC
+    </select>
+
+    <select id="querySite" resultType="org.springblade.energy.runningmanagement.station.vo.SiteTree"
+            parameterType="java.util.Map">
+        select t.*,(SELECT e.site_name FROM t_site e WHERE e.id=t.`parent_id`) AS parentNme,
+        st.name as stationName
+         from t_site t , t_station st  where t.is_deleted = 0 and t.station_id=st.id
+        <if test="stationId != null">
+            and station_id=#{stationId}
+        </if>
+        <if test="parentId != null">
+            and parent_id=#{parentId}
+        </if>
+        <if test="id != null">
+            and t.id=#{id}
+        </if>
+        order by t.create_time DESC
+    </select>
+
+    <select id="querySiteByPid" resultMap="siteTreeResultMap"
+            parameterType="java.lang.Long">
+        select t.*,(SELECT e.site_name FROM t_site e WHERE e.id=t.`parent_id`) AS parentNme,
+        st.name as station
+        from t_site t , t_station st  where t.is_deleted = 0 and t.station_id=st.id
+        <if test="parentId != null">
+            and parent_id=#{parentId}
+        </if>
+    </select>
+
+    <select id="queryChildSite" resultMap="siteResultMap"
+            parameterType="map">
+        SELECT t.* FROM t_site t WHERE t.is_deleted=0
+        AND t.id IN (
+        SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.id,',',b.help_topic_id+1),',',-1) id
+        FROM (SELECT f_site_child(#{id}) AS id ) a
+        JOIN mysql.help_topic b
+        ON b.help_topic_id  &lt;  (LENGTH(a.id) - LENGTH(REPLACE(a.id,',',''))+1)
+        )
+        union
+        SELECT t.* FROM t_site t WHERE t.is_deleted=0  AND t.id =#{id}
+    </select>
+    <select id="getlistByDiagramType"
+            resultType="org.springblade.energy.runningmanagement.station.entity.Site">
+        SELECT DISTINCT t.* FROM t_site t,`t_diagram` d WHERE t.is_deleted=0
+        AND d.station_id=t.station_id
+        AND d.`site_id`=t.id
+         AND t.station_id =#{stationId}
+        <if test="diagramTypes != null">
+            AND d.`diagram_type` in
+            <foreach collection="diagramTypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

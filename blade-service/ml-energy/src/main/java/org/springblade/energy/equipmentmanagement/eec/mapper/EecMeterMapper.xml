@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.equipmentmanagement.eec.mapper.EecMeterMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="eecMeterResultMap" type="org.springblade.energy.equipmentmanagement.eec.entity.EecMeter">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="equ_no" property="equNo"/>
+        <result column="nature" property="nature"/>
+        <result column="nature_name" property="natureName"/>
+        <result column="equ_type" property="equType"/>
+        <result column="unit_area" property="unitArea"/>
+        <result column="put_time" property="putTime"/>
+    </resultMap>
+
+    <resultMap extends="eecMeterResultMap" id="EecMeterVOResultMap" type="org.springblade.energy.equipmentmanagement.eec.vo.EecMeterVO">
+        <result column="stationNme" property="stationNme" />
+        <result column="siteName" property="siteName" />
+
+    </resultMap>
+
+    <select id="selectEecMeterPage" resultMap="EecMeterVOResultMap">
+        select t.*,s.`name` stationNme , st.`site_name` siteName
+        from t_eec_meter t ,`t_station` s,`t_site` st
+        where t.is_deleted = 0
+        and t.`station_id`=s.`id`
+        and t.`site_id`=st.`id`
+        <if test="eecMeter.stationId != null">
+            and t.station_id=#{eecMeter.stationId}
+        </if>
+        <if test="eecMeter.siteId != null">
+            and t.site_id=#{eecMeter.siteId}
+        </if>
+        order by t.create_time desc
+    </select>
+
+</mapper>

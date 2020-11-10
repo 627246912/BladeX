@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.energymanagement.mapper.EnergyConsumeItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="energyConsumeItemResultMap" type="org.springblade.energy.energymanagement.entity.EnergyConsumeItem">
+        <id column="item_id" property="itemId"/>
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+        <result column="consume_type" property="consumeType"/>
+    </resultMap>
+    <insert id="submitEnergyConsumeItem"
+            parameterType="org.springblade.energy.energymanagement.entity.EnergyConsumeItem">
+        INSERT INTO t_energy_consume_item(id,item_id,consume_type,
+        create_user,create_dept,create_time,update_user,update_time,STATUS,is_deleted
+        ) VALUES (#{id},#{itemId},#{consumeType},#{createUser},#{createDept},#{createTime},
+        #{updateUser},#{updateTime},#{status},#{isDeleted})
+        ON DUPLICATE KEY UPDATE consume_type=#{consumeType},update_user=#{updateUser},update_time=#{updateTime}
+
+    </insert>
+    <delete id="dellEnergyConsumeItemByIds" parameterType="java.util.List">
+        delete from t_energy_consume_item
+        where id in
+        <foreach close=")" collection="list" index="i" item="item" open="(" separator=",">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </delete>
+
+    <select id="selectEnergyConsumeItemPage" resultMap="energyConsumeItemResultMap">
+        select * from t_energy_consume_item where is_deleted = 0
+    </select>
+
+
+    <select id="selectEnergyConsumeItemByMap" resultType="org.springblade.energy.energymanagement.dto.ConsumeItemResq"
+            parameterType="java.util.Map">
+        SELECT DISTINCT ci.id, ci.item_id itemId,di.property_name propertyName ,di.`property_alias` propertyAlias,
+        ci.consume_type as consumeType,ct.consume_name as consumeName,ct.energy_type as energyType
+        FROM t_diagram_item di,t_energy_consume_item ci,t_energy_consume_type ct
+        WHERE di.`item_id`=ci.`item_id`
+        AND di.is_deleted=0
+        AND ci.consume_type=ct.consume_type
+        <if test="stationId != null">
+            AND di.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND di.`site_id`=#{siteId}
+        </if>
+        <if test="consumeType != null">
+            and ci.`consume_type`=#{consumeType}
+        </if>
+        <if test="deptId != null">
+            and di.`dept_id`=#{deptId}
+        </if>
+        <if test="energyType != null">
+            and ct.`energy_type`=#{energyType}
+        </if>
+    </select>
+    <select id="selectNolinkedItemByMap" resultType="org.springblade.energy.energymanagement.dto.ConsumeItemResq"
+            parameterType="java.util.Map">
+        SELECT DISTINCT di.item_id itemId,di.property_name propertyName ,di.`property_alias` propertyAlias
+        FROM t_diagram_item di
+        WHERE
+        NOT EXISTS (SELECT 1 FROM t_energy_consume_item t WHERE di.`item_id`=t.`item_id`)
+        and di.is_deleted=0
+        <if test="stationId != null">
+            AND di.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND di.`site_id`=#{siteId}
+        </if>
+        <if test="propertyCode != null">
+            and di.property_code =#{propertyCode}
+        </if>
+        <if test="propertyCodes != null">
+            and di.property_code in
+            <foreach collection="propertyCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

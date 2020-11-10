@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291575151250509829', 0, 'invoiceturnunit', '转供单位', 'menu', '/energy/invoiceturnunit', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291575151250509830', '1291575151250509829', 'invoiceturnunit_add', '新增', 'add', '/energy/invoiceturnunit/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291575151250509831', '1291575151250509829', 'invoiceturnunit_edit', '修改', 'edit', '/energy/invoiceturnunit/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291575151250509832', '1291575151250509829', 'invoiceturnunit_delete', '删除', 'delete', '/api/ml-energy/invoiceturnunit/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291575151250509833', '1291575151250509829', 'invoiceturnunit_view', '查看', 'view', '/energy/invoiceturnunit/view', 'file-text', 4, 2, 2, 1, NULL, 0);

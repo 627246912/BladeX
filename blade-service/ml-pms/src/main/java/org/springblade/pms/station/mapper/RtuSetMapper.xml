@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.pms.station.mapper.RtuSetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="gwcomSetResultMap" type="org.springblade.pms.station.entity.RtuSet">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="gw_id" property="gwId"/>
+        <result column="rtuid" property="rtuid"/>
+        <result column="rtuidcb" property="rtuidcb"/>
+        <result column="user_group" property="userGroup"/>
+        <result column="rated_i" property="ratedI"/>
+        <result column="warn_i" property="warnI"/>
+        <result column="alarm_i" property="alarmI"/>
+        <result column="rtuname" property="rtuname"/>
+        <result column="port" property="port"/>
+        <result column="day_max_power" property="dayMaxPower"/>
+        <result column="activate_time" property="activateTime"/>
+        <result column="time_contor_status" property="timeContorStatus"/>
+        <result column="switch_status" property="switchStatus"/>
+        <result column="discharge_times" property="dischargeTimes"/>
+        <result column="discharge_voltage" property="dischargeVoltage"/>
+
+    </resultMap>
+
+
+    <select id="selectGwcomSetPage" resultMap="gwcomSetResultMap">
+        select * from t_rtu_set where is_deleted = 0
+        <if test="gwId != null">
+            and gw_id=#{gwId}
+        </if>
+        <if test="rtuidcb != null">
+            and rtuidcb=#{rtuidcb}
+        </if>
+        order by rtuidcb asc
+    </select>
+    <select id="selectGwcomSetList" resultType="org.springblade.pms.station.entity.RtuSet"
+            parameterType="java.util.Map">
+        select * from t_rtu_set where is_deleted = 0
+        <if test="gwId != null">
+            and gw_id=#{gwId}
+        </if>
+
+        <if test="gwIds != null">
+            and gw_id in
+            <foreach collection="gwIds" item="did" index="index" open="("
+                     close=")" separator=",">
+                #{did,jdbcType=VARCHAR}
+            </foreach>
+
+        </if>
+        <if test="userGroups != null">
+            and user_group in
+            <foreach collection="userGroups" item="did" index="index" open="("
+                     close=")" separator=",">
+                #{did,jdbcType=VARCHAR}
+            </foreach>
+
+        </if>
+        <if test="rtuidcb != null">
+            and rtuidcb=#{rtuidcb}
+        </if>
+        order by port asc
+
+    </select>
+    <select id="selectGwcomUserGroupCount" resultType="org.springblade.dto.NameValue"
+            parameterType="java.util.Set">
+        SELECT user_group AS CODE,COUNT(1) VALUE,
+        CASE user_group WHEN '4' THEN '铁塔' WHEN '1' THEN '移动' WHEN '2' THEN '联通' WHEN '3' THEN '电信' WHEN '5' THEN '广电' ELSE '--' END  AS NAME
+        FROM `t_rtu_set` t WHERE  t.`is_deleted`=0
+        AND user_group !=0
+        AND gw_id IN
+        <foreach collection="gwIds" item="did" index="index" open="("
+                 close=")" separator=",">
+            #{did,jdbcType=VARCHAR}
+        </foreach>
+        GROUP BY user_group
+    </select>
+    <select id="selectStationUserGroupCount" resultType="org.springblade.dto.NameValue"
+            parameterType="java.util.Set">
+    SELECT NAME, user_group AS CODE,COUNT(gw_id) VALUE FROM (
+    SELECT gw_id,user_group,
+    CASE user_group WHEN '4' THEN '铁塔' WHEN '1' THEN '移动' WHEN '2' THEN '联通' WHEN '3' THEN '电信' WHEN '5' THEN '广电' ELSE '--' END  AS NAME
+    FROM `t_rtu_set` t  WHERE  t.`is_deleted`=0
+    AND user_group !=0
+        AND gw_id IN
+        <foreach collection="gwIds" item="did" index="index" open="("
+                 close=")" separator=",">
+            #{did,jdbcType=VARCHAR}
+        </foreach>
+    GROUP BY gw_id,user_group
+    ) tt  GROUP BY user_group
+    </select>
+</mapper>

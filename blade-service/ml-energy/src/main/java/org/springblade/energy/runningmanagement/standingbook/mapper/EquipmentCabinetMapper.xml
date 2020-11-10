@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.standingbook.mapper.EquipmentCabinetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="equipmentCabinetResultMap" type="org.springblade.energy.runningmanagement.standingbook.entity.EquipmentCabinet">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="model_no" property="modelNo"/>
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="devote_time" property="devoteTime"/>
+        <result column="factory" property="factory"/>
+        <result column="use_unit" property="useUnit"/>
+        <result column="picture" property="picture"/>
+        <result column="qr_code" property="qrCode"/>
+        <result column="device_type" property="deviceType"/>
+    </resultMap>
+    <resultMap extends="equipmentCabinetResultMap" id="equipmentCabinetVOResultMap" type="org.springblade.energy.runningmanagement.standingbook.vo.EquipmentCabinetVO">
+        <result column="stationName" property="stationName" />
+        <result column="siteName" property="siteName" />
+
+    </resultMap>
+
+
+
+    <select id="selectEquipmentCabinetPage" resultMap="equipmentCabinetVOResultMap">
+         SELECT t.*,(SELECT NAME FROM t_station WHERE t.`station_id`=id) AS stationName,
+         (SELECT site_name FROM t_site WHERE t.`site_id`=id) AS siteName
+        FROM t_equipment_cabinet t WHERE t.is_deleted = 0
+
+        <if test="equipmentCabinet.deviceType !=null">
+            and t.device_type=#{equipmentCabinet.deviceType}
+        </if>
+        <if test="equipmentCabinet.siteId !=null">
+            and t.site_id=#{equipmentCabinet.siteId}
+        </if>
+        <if test="equipmentCabinet.modelNo !=null">
+            and t.model_no=#{equipmentCabinet.modelNo}
+        </if>
+        order by t.create_time DESC
+    </select>
+
+</mapper>

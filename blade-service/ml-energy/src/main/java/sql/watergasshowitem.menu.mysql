@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1267740065145171975', 0, 'watergasshowitem', '水气系统图展示数据项', 'menu', '/energy/watergasshowitem', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1267740065145171976', '1267740065145171975', 'watergasshowitem_add', '新增', 'add', '/energy/watergasshowitem/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1267740065145171977', '1267740065145171975', 'watergasshowitem_edit', '修改', 'edit', '/energy/watergasshowitem/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1267740065145171978', '1267740065145171975', 'watergasshowitem_delete', '删除', 'delete', '/api/ml-energy/watergasshowitem/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1267740065145171979', '1267740065145171975', 'watergasshowitem_view', '查看', 'view', '/energy/watergasshowitem/view', 'file-text', 4, 2, 2, 1, NULL, 0);

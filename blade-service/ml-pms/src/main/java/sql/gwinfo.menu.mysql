@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296287470459228166', 0, 'gwinfo', 'station', 'menu', '/pms/gwinfo', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296287470459228167', '1296287470459228166', 'gwinfo_add', '新增', 'add', '/pms/gwinfo/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296287470459228168', '1296287470459228166', 'gwinfo_edit', '修改', 'edit', '/pms/gwinfo/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296287470459228169', '1296287470459228166', 'gwinfo_delete', '删除', 'delete', '/api/ml-pms/gwinfo/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1296287470459228170', '1296287470459228166', 'gwinfo_view', '查看', 'view', '/pms/gwinfo/view', 'file-text', 4, 2, 2, 1, NULL, 0);

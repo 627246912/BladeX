@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.deptcost.mapper.InvoiceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="invoiceResultMap" type="org.springblade.energy.deptcost.entity.Invoice">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="invoice_price" property="invoicePrice"/>
+        <result column="invoice_no" property="invoiceNo"/>
+        <result column="invoice_type" property="invoiceType"/>
+        <result column="invoice_time" property="invoiceTime"/>
+
+    </resultMap>
+
+    <select id="selectInvoicePage" resultMap="invoiceResultMap">
+        select * from t_invoice i where is_deleted = 0
+        <if test="deptId != null">
+            AND i.`dept_id`=#{deptId}
+        </if>
+        <if test="invoiceType != null">
+            AND i.`invoice_type`=#{invoiceType}
+        </if>
+        <if test="invoiceNo != null">
+            AND i.`invoice_no`=#{invoiceNo}
+        </if>
+        <if test="invoiceTime != null">
+            AND i.`invoice_time`=#{invoiceTime}
+        </if>
+    </select>
+
+    <select id="selectDeptInvoicePage" resultType="org.springblade.energy.deptcost.dto.DeptInvoiceDTO">
+        select  any_value(id) id,
+        any_value(dept_id) dept_id,
+        any_value(invoice_price) invoice_price,
+        any_value(invoice_no) invoice_no,
+        any_value(invoice_type) invoice_type,
+        any_value(invoice_time) invoice_time,
+        any_value(create_time) create_time,
+        any_value(update_time) update_time,
+        any_value(is_deleted) is_deleted,
+        any_value(tenant_id) tenant_id
+        from t_invoice i where is_deleted = 0
+        <if test="invoice.deptId != null">
+            AND i.`dept_id`=#{invoice.deptId}
+        </if>
+        <if test="invoice.invoiceType != null">
+            AND i.`invoice_type`=#{invoice.invoiceType}
+        </if>
+        <if test="invoice.invoiceNo != null">
+            AND i.`invoice_no`=#{invoice.invoiceNo}
+        </if>
+        <if test="invoice.invoiceTime != null">
+            AND i.`invoice_time`=#{invoice.invoiceTime}
+        </if>
+       group by  dept_id
+    </select>
+
+</mapper>

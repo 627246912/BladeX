@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.resource.mapper.ProductPropertyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="productPropertyResultMap" type="org.springblade.bean.ProductProperty">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="product_id" property="productId"/>
+        <result column="property_code" property="propertyCode"/>
+        <result column="property_name" property="propertyName"/>
+        <result column="property_alias" property="propertyAlias"/>
+        <result column="unit" property="unit"/>
+        <result column="ftype" property="ftype"/>
+        <result column="btype" property="btype"/>
+        <result column="ctratio" property="ctratio"/>
+        <result column="basic" property="basic"/>
+        <result column="alarm" property="alarm"/>
+        <result column="store" property="store"/>
+        <result column="calcrule" property="calcrule"/>
+        <result column="uplimit" property="uplimit"/>
+        <result column="lowlimit" property="lowlimit"/>
+        <result column="upuplimit" property="upuplimit"/>
+        <result column="lowlowlimit" property="lowlowlimit"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="duration" property="duration"/>
+        <result column="send_sms" property="sendSms"/>
+        <result column="send_email" property="sendEmail"/>
+        <result column="alarm_url" property="alarmUrl"/>
+        <result column="yx_alarm_val" property="yxAlarmVal"/>
+        <result column="yx_alarm_level" property="yxAlarmLevel"/>
+        <result column="max_val" property="maxVal"/>
+        <result column="min_val" property="minVal"/>
+        <result column="ratio" property="ratio"/>
+        <result column="visible" property="visible"/>
+        <result column="history_curve" property="historyCurve"/>
+        <result column="trend_analysis" property="trendAnalysis"/>
+        <result column="remark" property="remark"/>
+        <result column="energy_analysis" property="energyAnalysis"/>
+        <result column="formula" property="formula"/>
+
+    </resultMap>
+
+
+    <select id="selectProductPropertyPage" resultMap="productPropertyResultMap">
+        select * from t_product_property where is_deleted = 0
+        <if test="productProperty.id != null">
+            and id=#{productProperty.id}
+        </if>
+
+        <if test="productProperty.productId != null">
+            and product_id=#{productProperty.productId}
+        </if>
+        <if test="productProperty.propertyCode != null">
+            and property_code=#{productProperty.propertyCode}
+        </if>
+    </select>
+    <select id="selectProductProperty"  resultMap="productPropertyResultMap"
+            parameterType="java.util.Map">
+        select * from t_product_property where is_deleted = 0
+        <if test="id != null">
+            and id=#{id}
+        </if>
+
+        <if test="productId != null">
+            and product_id=#{productId}
+        </if>
+        <if test="propertyCode != null">
+            and property_code=#{propertyCode}
+        </if>
+    </select>
+    <select id="selectProductPropertyByPids"  resultMap="productPropertyResultMap"
+            parameterType="java.util.List">
+        select * from t_product_property where is_deleted = 0
+        and product_id in
+        <foreach close=")" collection="list" index="i" item="item" open="(" separator=",">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="selectProductPropertyPType"  resultType="org.springblade.bean.Ptype">
+        select * from t_product_ptype
+    </select>
+
+</mapper>

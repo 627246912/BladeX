@@ -1,0 +1,424 @@
+ALTER TABLE t_station ADD water_price DOUBLE(11,2) NULL COMMENT '水单价' ;
+ALTER TABLE t_station ADD gas_price DOUBLE(11,2) NULL COMMENT '气单价' ;
+ALTER TABLE t_diagram_product ADD grade INT(11) NULL COMMENT '水表燃气表等级' ;
+ALTER  TABLE t_diagram_product CHANGE   use_site_id dept_id  BIGINT(20) DEFAULT NULL COMMENT '用电部门';
+ALTER  TABLE t_diagram_item CHANGE   use_site_id dept_id  BIGINT(20) DEFAULT NULL COMMENT '用电部门';
+ALTER TABLE t_diagram ADD bk_image VARCHAR(400) NULL COMMENT '背景图片';
+
+
+
+UPDATE t_equipment_alarm SET  alarm_status=0 WHERE alarm_end_time = '0001-01-01 00:00:00';
+
+ALTER TABLE t_gas_meter drop COLUMN price;
+ALTER TABLE t_gas_meter ADD gas_company_id bigint(20) NULL COMMENT '供气公司id' ;
+ALTER TABLE t_gas_meter ADD low_season VARCHAR(64) NULL COMMENT '淡季月份' ;
+ALTER TABLE t_gas_meter ADD low_season_price DOUBLE(11,2) NULL COMMENT '淡季价格' ;
+ALTER TABLE t_gas_meter ADD busy_season VARCHAR(64) NULL COMMENT '旺季月份' ;
+ALTER TABLE t_gas_meter ADD busy_season_price DOUBLE(11,2) NULL COMMENT '旺季价格' ;
+
+
+
+drop table if exists t_water_meter;
+CREATE TABLE `t_water_meter` (
+  `item_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '数据项id',
+  `price` double(11,2) DEFAULT '0.00' COMMENT '谷价格',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  `id` bigint(20) NOT NULL,
+  `meter_type` int(1) DEFAULT NULL COMMENT '计量方式1月，2年',
+  `meter_time` datetime DEFAULT NULL COMMENT '计量时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='能源管理-电能计量管账'
+;
+
+drop table if exists t_power_meter;
+CREATE TABLE `t_power_meter` (
+  `item_id` varchar(64) COLLATE utf8mb4_bin NOT NULL COMMENT '数据项id',
+  `ctratio` float DEFAULT NULL COMMENT '变比',
+  `top` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '尖时间',
+  `peak` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '峰时间',
+  `flat` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '平时间',
+  `valley` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '谷时间',
+  `topPrice` double(11,2) DEFAULT '0.00' COMMENT '尖价格',
+  `peakPrice` double(11,2) DEFAULT '0.00' COMMENT '峰价格',
+  `flatPrice` double(11,2) DEFAULT '0.00' COMMENT '平价格',
+  `valleyPrice` double(11,2) DEFAULT '0.00' COMMENT '谷价格',
+  `diagram_type` varchar(32) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '电类型0中压，1低压 2直流',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  `id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='能源管理-电能计量管账'
+;
+DROP TABLE IF EXISTS t_gas_meter;
+CREATE TABLE `t_gas_meter` (
+  `item_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '数据项id',
+  `price` double(11,2) DEFAULT '0.00' COMMENT '谷价格',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  `id` bigint(20) NOT NULL,
+  `meter_type` int(1) DEFAULT NULL COMMENT '计量方式1月，2年',
+  `meter_time` datetime DEFAULT NULL COMMENT '计量时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='能源管理-气能计量管账'
+;
+
+
+
+drop VIEW if exists v_item_not_in_gas_meter;
+create VIEW `v_item_not_in_gas_meter` AS
+SELECT
+  `i`.`id`                 AS `id`,
+  `i`.`station_id`         AS `station_id`,
+  `i`.`site_id`            AS `site_id`,
+  `i`.`diagram_id`         AS `diagram_id`,
+  `i`.`did`                AS `did`,
+  `i`.`item_id`            AS `item_id`,
+  `i`.`diagram_product_id` AS `diagram_product_id`,
+  `i`.`product_id`         AS `product_id`,
+  `i`.`property_code`      AS `property_code`,
+  `i`.`property_name`      AS `property_name`,
+  `i`.`property_alias`     AS `property_alias`,
+  `i`.`unit`               AS `unit`,
+  `i`.`ftype`              AS `ftype`,
+  `i`.`btype`              AS `btype`,
+  `i`.`ctratio`            AS `ctratio`,
+  `i`.`basic`              AS `basic`,
+  `i`.`alarm`              AS `alarm`,
+  `i`.`store`              AS `store`,
+  `i`.`calcrule`           AS `calcrule`,
+  `i`.`uplimit`            AS `uplimit`,
+  `i`.`lowlimit`           AS `lowlimit`,
+  `i`.`upuplimit`          AS `upuplimit`,
+  `i`.`lowlowlimit`        AS `lowlowlimit`,
+  `i`.`alarm_type`         AS `alarm_type`,
+  `i`.`duration`           AS `duration`,
+  `i`.`send_sms`           AS `send_sms`,
+  `i`.`send_email`         AS `send_email`,
+  `i`.`alarm_url`          AS `alarm_url`,
+  `i`.`yx_alarm_val`       AS `yx_alarm_val`,
+  `i`.`yx_alarm_level`     AS `yx_alarm_level`,
+  `i`.`max_val`            AS `max_val`,
+  `i`.`min_val`            AS `min_val`,
+  `i`.`ratio`              AS `ratio`,
+  `i`.`visible`            AS `visible`,
+  `i`.`history_curve`      AS `history_curve`,
+  `i`.`trend_analysis`     AS `trend_analysis`,
+  `i`.`remark`             AS `remark`,
+  `i`.`energy_analysis`    AS `energy_analysis`,
+  `i`.`create_user`        AS `create_user`,
+  `i`.`create_dept`        AS `create_dept`,
+  `i`.`create_time`        AS `create_time`,
+  `i`.`update_user`        AS `update_user`,
+  `i`.`update_time`        AS `update_time`,
+  `i`.`status`             AS `status`,
+  `i`.`is_deleted`         AS `is_deleted`,
+  `i`.`formula`            AS `formula`,
+  `i`.`tenant_id`          AS `tenant_id`,
+  `i`.`pindex`             AS `pindex`,
+  `i`.`itemkey`            AS `itemkey`,
+  `i`.`property_id`        AS `property_id`,
+  `i`.`rtuidcb`            AS `rtuidcb`,
+  `i`.`dept_id`        AS `dept_id`
+FROM ((`t_diagram` `d`
+    JOIN `t_diagram_product` `p`)
+   JOIN `t_diagram_item` `i`)
+WHERE ((`d`.`id` = `p`.`diagram_id`)
+       AND (`d`.`id` = `i`.`diagram_id`)
+       AND (`p`.`id` = `i`.`diagram_product_id`)
+       AND (`p`.`product_dtype` = 4)
+       AND (`i`.`property_code` = 159)
+       and (`i`.`btype` = 3)
+       AND `i`.`item_id` IN(SELECT
+                              `t_gas_meter`.`item_id`
+                            FROM `t_gas_meter`)IS FALSE);
+
+drop VIEW if exists v_item_not_in_power_meter;
+CREATE VIEW `v_item_not_in_power_meter` AS
+SELECT
+  `i`.`id`                 AS `id`,
+  `i`.`station_id`         AS `station_id`,
+  `i`.`site_id`            AS `site_id`,
+  `i`.`diagram_id`         AS `diagram_id`,
+  `i`.`did`                AS `did`,
+  `i`.`item_id`            AS `item_id`,
+  `i`.`diagram_product_id` AS `diagram_product_id`,
+  `i`.`product_id`         AS `product_id`,
+  `i`.`property_code`      AS `property_code`,
+  `i`.`property_name`      AS `property_name`,
+  `i`.`property_alias`     AS `property_alias`,
+  `i`.`unit`               AS `unit`,
+  `i`.`ftype`              AS `ftype`,
+  `i`.`btype`              AS `btype`,
+  `i`.`ctratio`            AS `ctratio`,
+  `i`.`basic`              AS `basic`,
+  `i`.`alarm`              AS `alarm`,
+  `i`.`store`              AS `store`,
+  `i`.`calcrule`           AS `calcrule`,
+  `i`.`uplimit`            AS `uplimit`,
+  `i`.`lowlimit`           AS `lowlimit`,
+  `i`.`upuplimit`          AS `upuplimit`,
+  `i`.`lowlowlimit`        AS `lowlowlimit`,
+  `i`.`alarm_type`         AS `alarm_type`,
+  `i`.`duration`           AS `duration`,
+  `i`.`send_sms`           AS `send_sms`,
+  `i`.`send_email`         AS `send_email`,
+  `i`.`alarm_url`          AS `alarm_url`,
+  `i`.`yx_alarm_val`       AS `yx_alarm_val`,
+  `i`.`yx_alarm_level`     AS `yx_alarm_level`,
+  `i`.`max_val`            AS `max_val`,
+  `i`.`min_val`            AS `min_val`,
+  `i`.`ratio`              AS `ratio`,
+  `i`.`visible`            AS `visible`,
+  `i`.`history_curve`      AS `history_curve`,
+  `i`.`trend_analysis`     AS `trend_analysis`,
+  `i`.`remark`             AS `remark`,
+  `i`.`energy_analysis`    AS `energy_analysis`,
+  `i`.`create_user`        AS `create_user`,
+  `i`.`create_dept`        AS `create_dept`,
+  `i`.`create_time`        AS `create_time`,
+  `i`.`update_user`        AS `update_user`,
+  `i`.`update_time`        AS `update_time`,
+  `i`.`status`             AS `status`,
+  `i`.`is_deleted`         AS `is_deleted`,
+  `i`.`formula`            AS `formula`,
+  `i`.`tenant_id`          AS `tenant_id`,
+  `i`.`pindex`             AS `pindex`,
+  `i`.`itemkey`            AS `itemkey`,
+  `i`.`property_id`        AS `property_id`,
+  `i`.`rtuidcb`            AS `rtuidcb`,
+ `i`.`dept_id`        AS `dept_id`
+FROM ((`t_diagram` `d`
+    JOIN `t_diagram_product` `p`)
+   JOIN `t_diagram_item` `i`)
+WHERE ((`d`.`id` = `p`.`diagram_id`)
+       AND (`d`.`id` = `i`.`diagram_id`)
+       AND (`p`.`id` = `i`.`diagram_product_id`)
+       AND (`p`.`product_dtype` IN(2,8))
+       AND (`i`.`property_code` = 31)
+        and (`i`.`btype` = 1)
+       AND `i`.`item_id` IN(SELECT
+                              `t_power_meter`.`item_id`
+                            FROM `t_power_meter`)IS FALSE);
+
+drop VIEW if exists v_item_not_in_water_meter;
+CREATE VIEW `v_item_not_in_water_meter` AS
+SELECT
+  `i`.`id`                 AS `id`,
+  `i`.`station_id`         AS `station_id`,
+  `i`.`site_id`            AS `site_id`,
+  `i`.`diagram_id`         AS `diagram_id`,
+  `i`.`did`                AS `did`,
+  `i`.`item_id`            AS `item_id`,
+  `i`.`diagram_product_id` AS `diagram_product_id`,
+  `i`.`product_id`         AS `product_id`,
+  `i`.`property_code`      AS `property_code`,
+  `i`.`property_name`      AS `property_name`,
+  `i`.`property_alias`     AS `property_alias`,
+  `i`.`unit`               AS `unit`,
+  `i`.`ftype`              AS `ftype`,
+  `i`.`btype`              AS `btype`,
+  `i`.`ctratio`            AS `ctratio`,
+  `i`.`basic`              AS `basic`,
+  `i`.`alarm`              AS `alarm`,
+  `i`.`store`              AS `store`,
+  `i`.`calcrule`           AS `calcrule`,
+  `i`.`uplimit`            AS `uplimit`,
+  `i`.`lowlimit`           AS `lowlimit`,
+  `i`.`upuplimit`          AS `upuplimit`,
+  `i`.`lowlowlimit`        AS `lowlowlimit`,
+  `i`.`alarm_type`         AS `alarm_type`,
+  `i`.`duration`           AS `duration`,
+  `i`.`send_sms`           AS `send_sms`,
+  `i`.`send_email`         AS `send_email`,
+  `i`.`alarm_url`          AS `alarm_url`,
+  `i`.`yx_alarm_val`       AS `yx_alarm_val`,
+  `i`.`yx_alarm_level`     AS `yx_alarm_level`,
+  `i`.`max_val`            AS `max_val`,
+  `i`.`min_val`            AS `min_val`,
+  `i`.`ratio`              AS `ratio`,
+  `i`.`visible`            AS `visible`,
+  `i`.`history_curve`      AS `history_curve`,
+  `i`.`trend_analysis`     AS `trend_analysis`,
+  `i`.`remark`             AS `remark`,
+  `i`.`energy_analysis`    AS `energy_analysis`,
+  `i`.`create_user`        AS `create_user`,
+  `i`.`create_dept`        AS `create_dept`,
+  `i`.`create_time`        AS `create_time`,
+  `i`.`update_user`        AS `update_user`,
+  `i`.`update_time`        AS `update_time`,
+  `i`.`status`             AS `status`,
+  `i`.`is_deleted`         AS `is_deleted`,
+  `i`.`formula`            AS `formula`,
+  `i`.`tenant_id`          AS `tenant_id`,
+  `i`.`pindex`             AS `pindex`,
+  `i`.`itemkey`            AS `itemkey`,
+  `i`.`property_id`        AS `property_id`,
+  `i`.`rtuidcb`            AS `rtuidcb`,
+  `i`.`dept_id`        AS `dept_id`
+FROM ((`t_diagram` `d`
+    JOIN `t_diagram_product` `p`)
+   JOIN `t_diagram_item` `i`)
+WHERE ((`d`.`id` = `p`.`diagram_id`)
+       AND (`d`.`id` = `i`.`diagram_id`)
+       AND (`p`.`id` = `i`.`diagram_product_id`)
+       AND (`p`.`product_dtype` = 5)
+       AND (`i`.`property_code` = 159)
+        and (`i`.`btype` = 2)
+       AND `i`.`item_id` IN(SELECT
+                              `t_water_meter`.`item_id`
+                            FROM `t_water_meter`)IS FALSE);
+
+DELIMITER $$
+
+USE `ml_energy`$$
+
+DROP FUNCTION IF EXISTS `f_site_child`$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_site_child`(in_id VARCHAR(64)) RETURNS VARCHAR(4000) CHARSET utf8mb4 COLLATE utf8mb4_bin
+BEGIN-- 需要定义接收游标数据的变量
+  DECLARE done BOOLEAN DEFAULT 0 ;
+  -- 自定义变量
+  DECLARE var_id VARCHAR(64) DEFAULT NULL ;
+  DECLARE var_out_ids VARCHAR(4000) DEFAULT '' ;
+
+  DECLARE var_i INT(11) DEFAULT 0 ;
+  -- 声明游标
+  DECLARE cur CURSOR FOR SELECT t3.id FROM (
+	SELECT t1.parent_id,t1.id,
+	IF(FIND_IN_SET(parent_id, @pids) > 0, @pids := CONCAT(@pids, ',', id), 0) AS ischild
+	FROM (
+			 SELECT id,parent_id FROM t_site t WHERE t.`is_deleted`=0 ORDER BY parent_id,id
+			) t1,
+			(SELECT @pids := in_id) t2
+	) t3 WHERE ischild != 0 ;
+
+   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1 ;
+	  -- 打开游标
+	  OPEN cur ;
+	  -- 使用repeat循环语法
+	  REPEAT
+	    -- 批读取数据到指定变量上
+	    FETCH cur INTO var_id;
+	    -- 进行逻辑操作
+	    IF done != 1 THEN
+	    SET var_out_ids=CONCAT(var_out_ids,',',var_id);
+	    SET var_i=var_i+1;
+	    END IF;
+	    -- 循环结束条件
+	    UNTIL done
+	  END REPEAT ;
+  -- 关闭游标
+  CLOSE cur ;
+  SET var_out_ids=SUBSTRING(var_out_ids,2);
+
+  RETURN var_out_ids;
+
+
+    END$$
+
+DELIMITER ;
+
+drop TABLE if exists t_energy_tar;
+CREATE TABLE `t_energy_tar` (
+  `id` bigint(20) NOT NULL,
+  `station_id` bigint(20) NOT NULL COMMENT '站点id',
+  `site_id` bigint(20) NOT NULL COMMENT '位置id',
+  `dept_id` bigint(20) NOT NULL COMMENT '部门id',
+  `type` int(11) NOT NULL COMMENT '2:月3:年8:季度',
+  `tar` double(11,2) NOT NULL COMMENT '指标',
+  `energy_type` int(11) NOT NULL COMMENT '1供电，2供水，3供气',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+;
+
+
+drop TABLE if exists t_energy_consume_item;
+CREATE TABLE `t_energy_consume_item` (
+  `id` bigint(20) NOT NULL,
+  `item_id` varchar(32) COLLATE utf8mb4_bin NOT NULL COMMENT '数据项',
+  `consume_type` int(11) NOT NULL,
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+;
+drop TABLE if exists t_energy_consume_type;
+CREATE TABLE `t_energy_consume_type` (
+  `id` bigint(20) NOT NULL,
+  `consume_type` int(11) NOT NULL AUTO_INCREMENT COMMENT '消耗类型',
+  `consume_name` varchar(64) COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
+  `energy_type` int(11) NOT NULL COMMENT '能源类型1供电2供水3供气',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` varchar(12) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  PRIMARY KEY (`consume_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+;
+ALTER TABLE t_sys_area ADD tenant_id varchar(12) null COMMENT '租户Id' ;
+
+
+DROP TABLE IF EXISTS t_eec_metering;
+DROP TABLE IF EXISTS t_eec_meter;
+CREATE TABLE `t_eec_meter` (
+  `id` BIGINT(20) NOT NULL,
+  `station_id` BIGINT(20) NOT NULL COMMENT '站点ID',
+  `site_id` BIGINT(20) NOT NULL COMMENT '位置ID',
+  `equ_no` VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '设备编号',
+  `nature` INT(11) DEFAULT NULL COMMENT '性质1:户式中央空调 2:商用中央空调',
+  `nature_name` VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '性质名称',
+  `equ_type` VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '设备型号',
+  `unit_area` FLOAT(11,2) NOT NULL COMMENT '单位面积',
+  `put_time` DATETIME DEFAULT NULL COMMENT '投入时间',
+  `create_user` BIGINT(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` BIGINT(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `update_user` BIGINT(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `is_deleted` INT(2) DEFAULT '0' COMMENT '是否删除',
+  `tenant_id` VARCHAR(12) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '租户Id',
+  `status` INT(2) DEFAULT NULL COMMENT '状态',
+  PRIMARY KEY (`id`,`station_id`,`site_id`,`equ_no`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='重点能耗设备-》仪表配置';
+

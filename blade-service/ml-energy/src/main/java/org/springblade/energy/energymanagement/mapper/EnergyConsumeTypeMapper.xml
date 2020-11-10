@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.energymanagement.mapper.EnergyConsumeTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="energyConsumeTypeResultMap" type="org.springblade.energy.energymanagement.entity.EnergyConsumeType">
+        <id column="consume_type" property="consumeType"/>
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+        <result column="consume_name" property="consumeName"/>
+        <result column="energy_type" property="energyType"/>
+    </resultMap>
+
+
+    <select id="selectEnergyConsumeTypePage" resultMap="energyConsumeTypeResultMap">
+        select * from t_energy_consume_type where is_deleted = 0
+        <if test="energyConsumeType.energyType != null">
+            AND energy_type=#{energyConsumeType.energyType}
+        </if>
+        <if test="energyConsumeType.consumeName != null">
+            AND consume_name=#{energyConsumeType.consumeName}
+        </if>
+    </select>
+
+</mapper>

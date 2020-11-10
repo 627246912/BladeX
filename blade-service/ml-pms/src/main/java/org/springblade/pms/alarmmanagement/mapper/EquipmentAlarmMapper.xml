@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.pms.alarmmanagement.mapper.EquipmentAlarmMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="equipmentAlarmResultMap" type="org.springblade.pms.alarmmanagement.entity.EquipmentAlarm">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="alarmId" property="alarmId"/>
+        <result column="gwId" property="gwId"/>
+        <result column="alarmItemId" property="alarmItemId"/>
+        <result column="equipment_id" property="equipmentId"/>
+        <result column="equipment_name" property="equipmentName"/>
+        <result column="equipment_type_id" property="equipmentTypeId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="address" property="address"/>
+        <result column="alarm_content" property="alarmContent"/>
+        <result column="level" property="level"/>
+        <result column="alarm_status" property="alarmStatus"/>
+        <result column="alarm_time" property="alarmTime"/>
+        <result column="alarm_end_time" property="alarmEndTime"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="user_group" property="userGroup"/>
+    </resultMap>
+
+
+    <select id="selectEquipmentAlarmPage" resultType="org.springblade.pms.alarmmanagement.dto.EquipmentAlarmRsep" >
+        SELECT a.id,a.alarmId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,
+        a.station_id ,
+        (SELECT station_name FROM `t_base_station` t WHERE t.id=a.station_id) AS stationName,
+        (SELECT gw_id FROM `t_base_station` t WHERE t.id=a.station_id) AS gwId,
+        a.address,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,
+        IF(a.alarm_status=0,NULL,a.alarm_end_time) AS alarmEndTime,
+        a.handle_status AS handleStatus
+        FROM t_equipment_alarm a WHERE a.is_deleted = 0
+
+        <if test="faultAnalysisReq.id !=null">
+            AND a.id=#{faultAnalysisReq.id}
+        </if>
+        <if test="faultAnalysisReq.gwId !=null">
+            AND a.gwId=#{faultAnalysisReq.gwId}
+        </if>
+        <if test="faultAnalysisReq.stationId !=null">
+            AND a.station_id=#{faultAnalysisReq.stationId}
+        </if>
+
+        <if test="faultAnalysisReq.alarmType !=null">
+            AND a.alarm_type=#{faultAnalysisReq.alarmType}
+        </if>
+        <if test="faultAnalysisReq.level !=null">
+            AND a.level=#{faultAnalysisReq.level}
+        </if>
+        <if test="faultAnalysisReq.startTime !=null">
+            AND a.alarm_time &gt;=  STR_TO_DATE(#{faultAnalysisReq.startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="faultAnalysisReq.endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{faultAnalysisReq.endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="faultAnalysisReq.alarmStatus !=null">
+            AND a.alarm_status=#{faultAnalysisReq.alarmStatus}
+        </if>
+
+        and handle_status != 4
+        ORDER BY alarmTime DESC
+    </select>
+
+    <select id="selectAlarmsByMap" resultType="org.springblade.pms.alarmmanagement.entity.EquipmentAlarm"
+            parameterType="java.util.Map">
+        select *
+        from t_equipment_alarm where is_deleted = 0
+
+            <if test="ids != null">
+                and id in
+                <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+            <if test="alarmIds != null">
+                and alarmId in
+                <foreach close=")" collection="alarmIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="alarmItemIds != null">
+                and alarmItemId in
+                <foreach close=")" collection="alarmItemIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="siteId != null">
+                and site_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="stime != null">
+                and alarm_time &gt;= #{stime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="etime != null">
+                and alarm_time &lt; #{etime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endStime != null">
+                and alarm_end_time &gt;= #{endStime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endEtime != null">
+                and alarm_end_time &lt; #{endEtime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="type != null and type == 1">
+                and alarm_end_time is null
+            </if>
+            <if test="alarmTypes != null">
+                and level in
+                <foreach close=")" collection="alarmTypes" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=TINYINT}
+            </if>
+        <if test="handleStatus != null">
+            and handle_status = #{handleStatus,jdbcType=TINYINT}
+        </if>
+            and handle_status != 4
+
+        order by alarm_time desc
+        </select>
+
+    <select id="selectAlarmsSta" resultType="int"
+            parameterType="java.util.Map">
+        SELECT count(1) from t_equipment_alarm a where a.is_deleted = 0
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="alarmTypes != null">
+            and alarm_type in
+            <foreach close=")" collection="alarmTypes" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;=  STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        and handle_status != 4
+    </select>
+
+
+    <select id="selectAlarmsLevelSta" resultType="org.springblade.dto.NameValue"
+            parameterType="java.util.Map">
+             SELECT count(level) value,level code
+            from t_equipment_alarm a where a.is_deleted = 0
+
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="alarmTypes != null">
+            and alarm_type in
+            <foreach close=")" collection="alarmTypes" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;=  STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        and handle_status != 4
+
+            group by a.level
+    </select>
+    <select id="selectAlarmsTypeSta" resultType="org.springblade.dto.NameValue"
+            parameterType="java.util.Map">
+     SELECT count(alarm_type) value,alarm_type code
+            from t_equipment_alarm a where a.is_deleted = 0
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="alarmTypes != null">
+            and alarm_type in
+            <foreach close=")" collection="alarmTypes" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;=  STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        and handle_status != 4
+            group by a.alarm_type
+    </select>
+
+
+    <!-- 未处理的告警数据-->
+    <select id="getNotDisposeEquipmentAlarm" resultType="org.springblade.pms.alarmmanagement.dto.EquipmentAlarmRsep"
+            parameterType="java.util.Map">
+        SELECT a.id,a.alarmId,a.gwId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,
+        a.station_id ,s.`station_name` AS stationName, s.`address`,a.user_group,
+        s.`lat`,s.`lng`,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,a.alarm_end_time AS alarmEndTime,a.handle_status AS handleStatus
+        FROM t_equipment_alarm a,`t_base_station` s WHERE a.is_deleted = 0 and a.gwId is not null
+        AND a.`station_id`=s.id
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="id !=null">
+            AND a.id=#{id}
+        </if>
+        <if test="alarmId !=null">
+            AND a.alarmId=#{alarmId}
+        </if>
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        and a.alarm_status=0
+        and handle_status = 0
+        ORDER BY alarmTime DESC
+
+    </select>
+    <select id="selectLastAlarmEndTimeByStationId" resultType="java.util.Date" parameterType="java.lang.Long">
+        select IFNULL(alarm_time,now()) as endTime from t_equipment_alarm
+        <where>
+            <if test="stationId != null">
+                and station_id =#{stationId}
+            </if>
+            and handle_status != 4 order by IFNULL(alarm_time,now()) desc limit 1
+        </where>
+    </select>
+
+    <select id="getNewestEquipmentAlarm" resultType="org.springblade.pms.alarmmanagement.dto.EquipmentAlarmRsep"
+            parameterType="java.util.Map">
+        SELECT a.id,a.alarmId,a.gwId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,
+        a.station_id ,s.`station_name` AS stationName, s.`address`,a.user_group,
+        s.`lat`,s.`lng`,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,a.alarm_end_time AS alarmEndTime,a.handle_status AS handleStatus
+        FROM t_equipment_alarm a,`t_base_station` s WHERE a.is_deleted = 0 and a.gwId is not null
+        AND a.`station_id`=s.id
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="id !=null">
+            AND a.id=#{id}
+        </if>
+        <if test="alarmId !=null">
+            AND a.alarmId=#{alarmId}
+        </if>
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="id !=null">
+            AND a.id=#{id}
+        </if>
+        <if test="alarmId !=null">
+            AND a.alarmId=#{alarmId}
+        </if>
+        <if test="gwIds != null">
+            and gwId in
+            <foreach close=")" collection="gwIds" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        and a.alarm_status=0
+        and handle_status = 0
+        limit 1
+
+
+    </select>
+    <select id="getAlarmCount" resultType="java.lang.Integer"
+            parameterType="java.util.Map">
+    select count(1) from t_equipment_alarm a where handle_status != 4
+        <if test="stations != null">
+            and station_id in
+            <foreach close=")" collection="stations" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;=  STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+    </select>
+
+</mapper>

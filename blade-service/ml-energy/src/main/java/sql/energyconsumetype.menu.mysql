@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1279263441219219463', 0, 'energyconsumetype', '能源管理-能耗分析-能耗分类', 'menu', '/energy/energyconsumetype', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1279263441219219464', '1279263441219219463', 'energyconsumetype_add', '新增', 'add', '/energy/energyconsumetype/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1279263441219219465', '1279263441219219463', 'energyconsumetype_edit', '修改', 'edit', '/energy/energyconsumetype/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1279263441219219466', '1279263441219219463', 'energyconsumetype_delete', '删除', 'delete', '/api/ml-energy/energyconsumetype/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1279263441219219467', '1279263441219219463', 'energyconsumetype_view', '查看', 'view', '/energy/energyconsumetype/view', 'file-text', 4, 2, 2, 1, NULL, 0);

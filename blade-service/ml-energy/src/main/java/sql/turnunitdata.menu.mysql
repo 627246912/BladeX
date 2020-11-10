@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291636030507716615', 0, 'turnunitdata', '单位电量转供月份数据', 'menu', '/energy/turnunitdata', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291636030507716616', '1291636030507716615', 'turnunitdata_add', '新增', 'add', '/energy/turnunitdata/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291636030507716617', '1291636030507716615', 'turnunitdata_edit', '修改', 'edit', '/energy/turnunitdata/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291636030507716618', '1291636030507716615', 'turnunitdata_delete', '删除', 'delete', '/api/ml-energy/turnunitdata/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1291636030507716619', '1291636030507716615', 'turnunitdata_view', '查看', 'view', '/energy/turnunitdata/view', 'file-text', 4, 2, 2, 1, NULL, 0);

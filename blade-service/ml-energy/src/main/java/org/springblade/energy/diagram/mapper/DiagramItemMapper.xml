@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.diagram.mapper.DiagramItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="diagramItemResultMap" type="org.springblade.energy.diagram.entity.DiagramItem">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+
+        <result column="product_id" property="productId"/>
+        <result column="property_id" property="propertyId"/>
+
+        <result column="property_code" property="propertyCode"/>
+        <result column="property_name" property="propertyName"/>
+        <result column="property_alias" property="propertyAlias"/>
+        <result column="unit" property="unit"/>
+        <result column="ftype" property="ftype"/>
+        <result column="btype" property="btype"/>
+        <result column="ctratio" property="ctratio"/>
+        <result column="basic" property="basic"/>
+        <result column="alarm" property="alarm"/>
+        <result column="store" property="store"/>
+        <result column="calcrule" property="calcrule"/>
+        <result column="uplimit" property="uplimit"/>
+        <result column="lowlimit" property="lowlimit"/>
+        <result column="upuplimit" property="upuplimit"/>
+        <result column="lowlowlimit" property="lowlowlimit"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="duration" property="duration"/>
+        <result column="send_sms" property="sendSms"/>
+        <result column="send_email" property="sendEmail"/>
+        <result column="alarm_url" property="alarmUrl"/>
+        <result column="yx_alarm_val" property="yxAlarmVal"/>
+        <result column="yx_alarm_level" property="yxAlarmLevel"/>
+        <result column="max_val" property="maxVal"/>
+        <result column="min_val" property="minVal"/>
+        <result column="ratio" property="ratio"/>
+        <result column="visible" property="visible"/>
+        <result column="history_curve" property="historyCurve"/>
+        <result column="trend_analysis" property="trendAnalysis"/>
+        <result column="remark" property="remark"/>
+        <result column="energy_analysis" property="energyAnalysis"/>
+        <result column="formula" property="formula"/>
+
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="diagram_id" property="diagramId"/>
+        <result column="did" property="did"/>
+        <result column="item_id" property="itemId"/>
+        <result column="diagram_product_id" property="diagramProductId"/>
+        <result column="itemkey" property="itemkey"/>
+        <result column="rtuidcb" property="rtuidcb"/>
+        <result column="dept_id" property="deptId"/>
+
+    </resultMap>
+    <resultMap extends="diagramItemResultMap" id="itemResultMap" type="org.springblade.energy.diagram.dto.DiagramItemDTO">
+        <result column="stationName" property="stationName" />
+        <result column="siteName" property="siteName" />
+        <result column="productcname" property="productcname" />
+        <result column="parentproductcname" property="parentproductcname" />
+    </resultMap>
+
+
+    <select id="selectDiagramItemPage" resultMap="diagramItemResultMap">
+        select * from t_diagram_item where is_deleted = 0
+    </select>
+
+    <select id="selectDiagramItem" resultMap="diagramItemResultMap"
+            parameterType="org.springblade.energy.diagram.vo.DiagramItemVO">
+       select * from t_diagram_item where is_deleted = 0
+        <if test="id != null">
+            and id=#{id}
+        </if>
+        <if test="stationId != null">
+            and station_id=#{stationId}
+        </if>
+        <if test="siteId != null">
+            and site_id=#{siteId}
+        </if>
+        <if test="diagramId != null">
+            and diagram_id=#{diagramId}
+        </if>
+        <if test="did != null">
+            and did=#{did}
+        </if>
+        <if test="itemId != null">
+            and item_id=#{DiagramItemVO.itemId}
+        </if>
+        <if test="diagramProductId != null">
+            and diagram_product_id=#{diagramProductId}
+        </if>
+        <if test="productId != null">
+            and product_id=#{productId}
+        </if>
+        <if test="propertyId != null">
+            and property_id=#{propertyId}
+        </if>
+    </select>
+
+    <delete id="delDiagramItem" parameterType="java.util.List">
+        delete from t_diagram_item where diagram_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="delDiagramItemByIds" parameterType="java.util.List">
+        delete from t_diagram_item where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <delete id="delDiagramItemByProductIds" parameterType="java.util.List">
+        delete from t_diagram_item where diagram_product_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="selectDiagramItemByMap" resultType="org.springblade.energy.diagram.entity.DiagramItem"
+            parameterType="java.util.Map">
+        select * from t_diagram_item i ,t_diagram_product p where i.is_deleted = 0
+        and i.station_id=p.station_id and i.site_id=p.site_id
+        and i.diagram_id=p.diagram_id
+        and i.diagram_product_id=p.id
+
+        <if test="productDtype != null">
+            and p.product_dtype=#{productDtype}
+        </if>
+
+        <if test="id != null">
+            and i.id=#{id}
+        </if>
+        <if test="btype != null">
+            and i.btype=#{btype}
+        </if>
+        <if test="stationId != null">
+            and i.station_id=#{stationId}
+        </if>
+        <if test="siteId != null">
+            and i.site_id=#{siteId}
+        </if>
+        <if test="diagramId != null">
+            and i.diagram_id=#{diagramId}
+        </if>
+        <if test="did != null">
+            and i.did=#{did}
+        </if>
+        <if test="itemId != null">
+            and i.item_id=#{itemId}
+        </if>
+        <if test="diagramProductId != null">
+            and i.diagram_product_id=#{diagramProductId}
+        </if>
+
+        <if test="diagramProductIds != null">
+            and i.diagram_product_id in
+            <foreach collection="diagramProductIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="productId != null">
+            and i.product_id=#{productId}
+        </if>
+        <if test="propertyId != null">
+            and i.property_id=#{propertyId}
+        </if>
+
+        <if test="propertyCode != null">
+            and i.property_code =#{propertyCode}
+        </if>
+        <if test="propertyCodes != null">
+            and i.property_code in
+            <foreach collection="propertyCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pindex != null">
+            and i.pindex =#{pindex}
+        </if>
+        <if test="ftype != null">
+            and i.ftype =#{ftype}
+        </if>
+        <if test="deptId != null">
+            and i.dept_id =#{deptId}
+        </if>
+    </select>
+    <select id="getOneDiagramItemByItem" resultType="org.springblade.energy.diagram.entity.DiagramItem"
+            parameterType="java.lang.String">
+                SELECT * FROM  t_diagram_item t WHERE
+                t.item_id =  #{item}
+                LIMIT 1
+
+    </select>
+
+
+
+    <select id="getNotInPowerMeterItem" resultMap="itemResultMap" parameterType="java.util.Map">
+        select * from `v_item_not_in_power_meter` t
+        WHERE t.is_deleted=0
+        <if test="stationId != null">
+            AND t.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND t.`site_id`=#{siteId}
+        </if>
+    </select>
+    <select id="getNotInWaterMeterItem" resultMap="itemResultMap" parameterType="java.util.Map">
+        select * from `v_item_not_in_water_meter` t
+        WHERE t.is_deleted=0
+        <if test="stationId != null">
+            AND t.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND t.`site_id`=#{siteId}
+        </if>
+    </select>
+    <select id="getNotInGasMeterItem" resultMap="itemResultMap" parameterType="java.util.Map">
+        select * from `v_item_not_in_gas_meter` t
+        WHERE t.is_deleted=0
+        <if test="stationId != null">
+            AND t.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND t.`site_id`=#{siteId}
+        </if>
+    </select>
+
+
+
+    <select id="getItem" resultMap="itemResultMap" parameterType="java.util.Map">
+        SELECT i.*,p.productcname,
+        (SELECT productcname FROM t_diagram_product t WHERE t.pindex=p.`parent_id`) AS parentproductcname,
+        (SELECT t.name FROM t_station t WHERE t.id=p.`station_id`) AS stationName,
+        (SELECT site_name FROM t_site t WHERE t.id=p.`site_id`) AS siteName
+        FROM `t_diagram_product` p,`t_diagram_item` i ,`t_diagram` d
+        WHERE p.`id`=i.`diagram_product_id`
+        AND d.`id`=p.`diagram_id`
+        AND d.`id`=i.`diagram_id`
+        <if test="stationId != null">
+            AND p.`station_id`=#{stationId}
+        </if>
+        <if test="siteId != null">
+            AND p.`site_id`=#{siteId}
+        </if>
+        <if test="diagramProductId != null">
+            AND p.`id`=#{diagramProductId}
+        </if>
+        <if test="productDtype != null">
+            AND p.`product_dtype`=#{productDtype}
+        </if>
+        <if test="productDtypes != null">
+            and product_dtype in
+            <foreach collection="productDtypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="diagramType != null">
+            AND d.`diagram_type`=#{diagramType}
+        </if>
+        <if test="diagramTypes != null">
+            and d.diagram_type in
+            <foreach collection="diagramTypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="btype != null">
+            AND i.`btype`=#{btype}
+        </if>
+        <if test="btypes != null">
+            and i.`btype` in
+            <foreach collection="btypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="propertyCode != null">
+            AND i.`property_code`=#{propertyCode}
+        </if>
+        <if test="propertyCodes != null">
+            and i.property_code in
+            <foreach collection="propertyCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="deptId != null">
+            AND i.`dept_id`=#{deptId}
+        </if>
+    </select>
+    <select id="queryItemByDiagramPropductIds" resultType="org.springblade.energy.diagram.entity.DiagramItem"
+            parameterType="java.util.List">
+        select * from t_diagram_item where diagram_product_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.standingbook.mapper.EquipmentCableMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="equipmentCableResultMap" type="org.springblade.energy.runningmanagement.standingbook.entity.EquipmentCable">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="model_no" property="modelNo"/>
+        <result column="start_station_id" property="startStationId"/>
+        <result column="end_station_id" property="endStationId"/>
+        <result column="cable_length" property="cableLength"/>
+        <result column="device_type" property="deviceType"/>
+    </resultMap>
+
+    <resultMap extends="equipmentCableResultMap" id="equipmentCabinetVOResultMap" type="org.springblade.energy.runningmanagement.standingbook.vo.EquipmentCableVO">
+        <result column="startStationName" property="startStationName" />
+        <result column="endStationName" property="endStationName" />
+
+    </resultMap>
+
+
+
+    <select id="selectEquipmentCablePage" resultMap="equipmentCabinetVOResultMap">
+         SELECT t.*,
+         (SELECT NAME FROM t_station WHERE t.`start_station_id`=id) AS startStationName,
+         (SELECT NAME FROM t_station WHERE t.`end_station_id`=id) AS endStationName
+        FROM t_equipment_cable t WHERE t.is_deleted = 0
+        <if test="equipmentCable.id !=null">
+            and t.id=#{equipmentCable.id}
+        </if>
+        <if test="equipmentCable.name !=null">
+            and t.name=#{equipmentCable.name}
+        </if>
+        order by t.create_time DESC
+    </select>
+
+</mapper>

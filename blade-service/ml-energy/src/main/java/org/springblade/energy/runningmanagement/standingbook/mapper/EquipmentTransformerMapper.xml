@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.standingbook.mapper.EquipmentTransformerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="equipmentTransformerResultMap" type="org.springblade.energy.runningmanagement.standingbook.entity.EquipmentTransformer">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="model_no" property="modelNo"/>
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="devote_time" property="devoteTime"/>
+        <result column="factory" property="factory"/>
+        <result column="use_unit" property="useUnit"/>
+        <result column="picture" property="picture"/>
+        <result column="qr_code" property="qrCode"/>
+        <result column="voltage" property="voltage"/>
+        <result column="electricity" property="electricity"/>
+        <result column="capacity" property="capacity"/>
+        <result column="copper_loss" property="copperLoss"/>
+        <result column="iron_loss" property="ironLoss"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="diagram_id" property="diagramId"/>
+
+    </resultMap>
+    <resultMap extends="equipmentTransformerResultMap" id="equipmentTransformerVOResultMap" type="org.springblade.energy.runningmanagement.standingbook.vo.EquipmentTransformerVO">
+        <result column="stationName" property="stationName" />
+        <result column="siteName" property="siteName" />
+    </resultMap>
+
+    <select id="selectEquipmentTransformerPage" resultMap="equipmentTransformerVOResultMap">
+        SELECT t.*,(SELECT NAME FROM t_station WHERE t.`station_id`=id) AS stationName,
+        (SELECT site_name FROM t_site WHERE t.`site_id`=id) AS siteName
+        FROM t_equipment_transformer t WHERE t.is_deleted = 0
+        <if test="equipmentTransformer.deviceType !=null">
+            and t.device_type=#{equipmentTransformer.deviceType}
+        </if>
+        <if test="equipmentTransformer.modelNo !=null">
+            and t.model_no=#{equipmentTransformer.modelNo}
+        </if>
+        <if test="equipmentTransformer.diagramId !=null">
+            and t.diagram_id=#{equipmentTransformer.diagramId}
+        </if>
+        <if test="equipmentTransformer.code !=null">
+            and t.code=#{equipmentTransformer.code}
+        </if>
+        <if test="equipmentTransformer.stationId !=null">
+            and t.station_id=#{equipmentTransformer.stationId}
+        </if>
+        <if test="equipmentTransformer.siteId !=null">
+            and t.site_id=#{equipmentTransformer.siteId}
+        </if>
+        order by t.create_time DESC
+    </select>
+
+
+    <select id="selectEquipmentTransformer" resultMap="equipmentTransformerVOResultMap"
+            parameterType="org.springblade.energy.runningmanagement.standingbook.vo.EquipmentTransformerVO">
+        SELECT t.*,(SELECT NAME FROM t_station WHERE t.`station_id`=id) AS stationName,
+        (SELECT site_name FROM t_site WHERE t.`site_id`=id) AS siteName
+        FROM t_equipment_transformer t WHERE t.is_deleted = 0
+        <if test="deviceType !=null">
+            and t.device_type=#{deviceType}
+        </if>
+        <if test="modelNo !=null">
+            and t.model_no=#{modelNo}
+        </if>
+        <if test="diagramId !=null">
+            and t.diagram_id=#{diagramId}
+        </if>
+        <if test="code !=null">
+            and t.code=#{code}
+        </if>
+        <if test="stationId !=null">
+            and t.station_id=#{stationId}
+        </if>
+        <if test="siteId !=null">
+            and t.site_id=#{siteId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.station.mapper.StationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="stationResultMap" type="org.springblade.energy.runningmanagement.station.vo.StationVO">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="name" property="name"/>
+        <result column="power_area" property="powerArea"/>
+        <result column="type" property="type"/>
+        <result column="property" property="property"/>
+        <result column="capacity" property="capacity"/>
+        <result column="price" property="price"/>
+        <result column="top" property="top"/>
+        <result column="peak" property="peak"/>
+        <result column="flat" property="flat"/>
+        <result column="valley" property="valley"/>
+        <result column="top_price" property="topPrice"/>
+        <result column="peak_price" property="peakPrice"/>
+        <result column="flat_price" property="flatPrice"/>
+        <result column="valley_price" property="valleyPrice"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="county" property="county"/>
+        <result column="address" property="address"/>
+        <result column="lng" property="lng"/>
+        <result column="lat" property="lat"/>
+        <result column="plane_img" property="planeImg"/>
+        <result column="flow_img" property="flowImg"/>
+        <result column="topology_img" property="topologyImg"/>
+
+        <result column="water_price" property="waterPrice"/>
+        <result column="gas_price" property="gasPrice"/>
+
+        <result column="did" jdbcType="VARCHAR" property="deviceId" />
+    </resultMap>
+
+
+    <select id="selectStationPage" resultMap="stationResultMap" >
+        select * from t_station t where is_deleted = 0
+        <if test="station.id != null">
+            and t.id=#{station.id}
+        </if>
+        <if test="station.name != null">
+            and t.name like CONCAT(CONCAT('%', #{station.name}), '%')
+        </if>
+    </select>
+    <select id="getStationByDid" resultMap="stationResultMap"
+            parameterType="java.lang.String">
+         SELECT s.* FROM t_station s ,t_device_relation d
+         WHERE s.is_deleted = 0 AND s.id=d.station_id
+            and d.did=#{did}
+    </select>
+
+    <select id="selectStationsByDeviceIds" resultMap="stationResultMap" parameterType="java.util.Set">
+        select s.*, r.did
+        from
+        t_device_relation r,t_station s
+        where r.station_id=s.id and r.did in
+        <foreach collection="deviceIds" item="did" index="index" open="("
+                 close=")" separator=",">
+            #{did,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+</mapper>

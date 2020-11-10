@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.alarmmanagement.mapper.EquipmentAlarmMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="equipmentAlarmResultMap" type="org.springblade.energy.alarmmanagement.entity.EquipmentAlarm">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="alarmId" property="alarmId"/>
+        <result column="alarmItemId" property="alarmItemId"/>
+        <result column="equipment_id" property="equipmentId"/>
+        <result column="equipment_name" property="equipmentName"/>
+        <result column="equipment_type_id" property="equipmentTypeId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="address" property="address"/>
+        <result column="alarm_content" property="alarmContent"/>
+        <result column="level" property="level"/>
+        <result column="alarm_status" property="alarmStatus"/>
+        <result column="alarm_time" property="alarmTime"/>
+        <result column="alarm_end_time" property="alarmEndTime"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="is_create" property="isCreate"/>
+    </resultMap>
+
+
+    <select id="selectEquipmentAlarmPage" resultType="org.springblade.energy.alarmmanagement.dto.EquipmentAlarmRsep">
+        SELECT a.id,a.alarmId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,a.is_create AS isCreate,
+        a.station_id ,(SELECT NAME FROM t_station t WHERE t.id=a.station_id) AS stationName, a.address,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,
+        IF(a.alarm_status=0,NULL,a.alarm_end_time) AS alarmEndTime,
+        a.handle_status AS handleStatus,
+        a.`site_id`, (SELECT site_name FROM t_site si WHERE si.id=a.site_id) AS siteName
+        FROM t_equipment_alarm a WHERE a.is_deleted = 0
+        AND a.`site_id` IS NOT NULL and a.`equipment_id` is not null
+        <if test="faultAnalysisReq.id !=null">
+            AND a.id=#{faultAnalysisReq.id}
+        </if>
+        <if test="faultAnalysisReq.stationId !=null">
+            AND a.station_id=#{faultAnalysisReq.stationId}
+        </if>
+        <if test="faultAnalysisReq.siteId !=null">
+            AND a.site_id=#{faultAnalysisReq.siteId}
+        </if>
+        <if test="faultAnalysisReq.diagramProductId !=null">
+            AND a.equipment_id=#{faultAnalysisReq.diagramProductId}
+        </if>
+        <if test="faultAnalysisReq.alarmType !=null">
+            AND a.alarm_type=#{faultAnalysisReq.alarmType}
+        </if>
+        <if test="faultAnalysisReq.startTime !=null">
+            AND a.alarm_time &gt;= STR_TO_DATE(#{faultAnalysisReq.startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="faultAnalysisReq.endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{faultAnalysisReq.endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="faultAnalysisReq.alarmStatus !=null">
+            AND a.alarm_status=#{faultAnalysisReq.alarmStatus}
+        </if>
+
+        and handle_status != 4
+        ORDER BY alarmTime DESC
+    </select>
+
+    <select id="selectAlarmsByMap" resultType="org.springblade.energy.alarmmanagement.entity.EquipmentAlarm"
+            parameterType="java.util.Map">
+        select *
+        from t_equipment_alarm where is_deleted = 0
+
+        <if test="ids != null">
+            and id in
+            <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="alarmIds != null">
+            and alarmId in
+            <foreach close=")" collection="alarmIds" index="i" item="item" open="(" separator=",">
+                #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="alarmItemIds != null">
+            and alarmItemId in
+            <foreach close=")" collection="alarmItemIds" index="i" item="item" open="(" separator=",">
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+        <if test="stationId != null">
+            and station_id = #{stationId,jdbcType=INTEGER}
+        </if>
+        <if test="siteId != null">
+            and site_id = #{stationId,jdbcType=INTEGER}
+        </if>
+        <if test="stime != null">
+            and alarm_time &gt;= #{stime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="etime != null">
+            and alarm_time &lt; #{etime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endStime != null">
+            and alarm_end_time &gt;= #{endStime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endEtime != null">
+            and alarm_end_time &lt; #{endEtime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="type != null and type == 1">
+            and alarm_end_time is null
+        </if>
+        <if test="alarmTypes != null">
+            and level in
+            <foreach close=")" collection="alarmTypes" index="i" item="item" open="(" separator=",">
+                #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="level != null">
+            and level = #{level,jdbcType=TINYINT}
+        </if>
+        <if test="handleStatus != null">
+            and handle_status = #{handleStatus,jdbcType=TINYINT}
+        </if>
+        and handle_status != 4
+
+        order by alarm_time desc
+    </select>
+
+    <select id="selectFaultAnalysisPage" resultType="org.springblade.energy.alarmmanagement.dto.FaultAnalysisRsep">
+
+        SELECT COUNT(1) alarmNum,SUM(TIMESTAMPDIFF(SECOND,a.alarm_time,a.alarm_end_time))/60 haltTime ,
+        t.station_id ,(SELECT NAME FROM t_station t WHERE t.id=t.station_id) AS stationName,
+        t.`site_id`, (SELECT site_name FROM t_site si WHERE si.id=t.site_id) AS siteName,
+        t.id AS equipmentId, a.level alarmLevel,t.`productcname` equipmentName,
+        a.alarm_type AS alarmType
+        FROM t_diagram_product t LEFT JOIN t_equipment_alarm a
+        ON t.id=a.equipment_id
+        WHERE a.is_deleted = 0
+        AND a.alarm_end_time != '0001-01-01 00:00:00'
+        <if test="faultAnalysisReq.stationId !=null">
+            AND t.station_id=#{faultAnalysisReq.stationId}
+        </if>
+        <if test="faultAnalysisReq.siteId !=null">
+            AND t.site_id=#{faultAnalysisReq.siteId}
+        </if>
+        <if test="faultAnalysisReq.diagramProductId !=null">
+            AND t.id=#{faultAnalysisReq.diagramProductId}
+        </if>
+        <if test="faultAnalysisReq.alarmType !=null">
+            AND a.alarm_type=#{faultAnalysisReq.alarmType}
+        </if>
+        <if test="faultAnalysisReq.startTime !=null">
+            AND a.alarm_time &gt;= STR_TO_DATE(#{faultAnalysisReq.startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="faultAnalysisReq.endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{faultAnalysisReq.endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+
+        group by t.id, a.level,a.alarm_type
+
+
+    </select>
+    <select id="selectAlarmsLevelSta" resultType="org.springblade.energy.alarmmanagement.dto.Val"
+            parameterType="org.springblade.energy.alarmmanagement.dto.FaultAnalysisReq">
+        SELECT count(level) val,level id
+        from t_equipment_alarm a where a.is_deleted = 0
+        and a.`site_id` is not null and a.`equipment_id` is not null
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="siteId !=null">
+            AND a.site_id=#{siteId}
+        </if>
+        <if test="diagramProductId !=null">
+            AND a.equipment_id=#{diagramProductId}
+        </if>
+        <if test="alarmType !=null">
+            AND a.alarm_type=#{alarmType}
+        </if>
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;= STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        and handle_status != 4
+
+        group by a.level
+    </select>
+    <select id="selectAlarmsTypeSta" resultType="org.springblade.energy.alarmmanagement.dto.Val"
+            parameterType="org.springblade.energy.alarmmanagement.dto.FaultAnalysisReq">
+        SELECT count(alarm_type) val,alarm_type id
+        from t_equipment_alarm a where a.is_deleted = 0
+        and a.`site_id` is not null and a.`equipment_id` is not null
+
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="siteId !=null">
+            AND a.site_id=#{siteId}
+        </if>
+        <if test="diagramProductId !=null">
+            AND a.equipment_id=#{diagramProductId}
+        </if>
+        <if test="alarmType !=null">
+            AND a.alarm_type=#{alarmType}
+        </if>
+        <if test="startTime !=null">
+            AND a.alarm_time &gt;= STR_TO_DATE(#{startTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        <if test="endTime !=null">
+            AND a.alarm_time &lt;= STR_TO_DATE(#{endTime},'%Y-%c-%d %H:%i:%s')
+        </if>
+        and handle_status != 4
+        group by a.alarm_type
+    </select>
+
+
+    <select id="getNewestEquipmentAlarm" resultType="org.springblade.energy.alarmmanagement.dto.EquipmentAlarmRsep"
+            parameterType="java.util.Map">
+        SELECT a.id,a.alarmId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,
+        a.station_id ,s.`name` AS stationName, s.`address`,
+        s.`lat`,s.`lng`,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,a.alarm_end_time AS alarmEndTime,a.handle_status AS handleStatus,
+        a.`site_id`, (SELECT site_name FROM t_site si WHERE si.id=a.site_id) AS siteName
+        FROM t_equipment_alarm a,`t_station` s WHERE a.is_deleted = 0
+        and a.`station_id`=s.id
+        AND a.`site_id` IS NOT NULL
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="id !=null">
+            AND a.id=#{id}
+        </if>
+        <if test="alarmId !=null">
+            AND a.alarmId=#{alarmId}
+        </if>
+        ORDER BY alarmTime DESC
+        limit 1
+
+
+    </select>
+    <!-- 未处理的告警数据-->
+    <select id="getNotDisposeEquipmentAlarm" resultType="org.springblade.energy.alarmmanagement.dto.EquipmentAlarmRsep"
+            parameterType="java.util.Map">
+        SELECT a.id,a.alarmId, a.alarmItemId,a.equipment_id AS equipmentId,a.equipment_name AS equipmentName,
+        a.equipment_type_id AS equipmentTypeId,
+        a.station_id ,s.`name` AS stationName, s.`address`,
+        s.`lat`,s.`lng`,
+        a.alarm_content AS alarmContent,a.level,a.alarm_type AS alarmType, a.alarm_status AS alarmStatus,
+        a.alarm_time AS alarmTime,a.alarm_end_time AS alarmEndTime,a.handle_status AS handleStatus,
+        a.`site_id`, (SELECT site_name FROM t_site si WHERE si.id=a.site_id) AS siteName
+        FROM t_equipment_alarm a,`t_station` s WHERE a.is_deleted = 0
+        and a.`station_id`=s.id
+        AND a.`site_id` IS NOT NULL
+        <if test="stationId !=null">
+            AND a.station_id=#{stationId}
+        </if>
+        <if test="id !=null">
+            AND a.id=#{id}
+        </if>
+        <if test="alarmId !=null">
+            AND a.alarmId=#{alarmId}
+        </if>
+        and a.alarm_status=0
+        and handle_status = 0
+        ORDER BY alarmTime DESC
+
+    </select>
+
+    <select id="selectLastAlarmEndTimeByItemIds" resultType="java.util.Date">
+        select IFNULL(alarm_end_time,now()) as endTime from t_equipment_alarm
+        <where>
+            <if test="itemIds != null">
+                and alarmItemId in
+                <foreach close=")" collection="itemIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            and handle_status != 4 order by IFNULL(alarm_end_time,now()) desc limit 1
+        </where>
+    </select>
+
+</mapper>

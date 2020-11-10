@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.station.mapper.SysAreaMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="sysAreaResultMap" type="org.springblade.energy.runningmanagement.station.entity.SysArea">
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="area_rank" property="areaRank"/>
+        <result column="order_num" property="orderNum"/>
+    </resultMap>
+
+
+    <select id="selectSysAreaPage" resultMap="sysAreaResultMap">
+        select * from t_sys_area where is_deleted = 0
+    </select>
+    <select id="getAreaTree" resultType="org.springblade.energy.runningmanagement.station.vo.AreaTree" parameterType="java.util.Map">
+        select area_code as areaCode ,area_name areaName , parent_id parentId from t_sys_area where is_deleted = 0
+        <if test="areaCode != null">
+            and area_code=#{areaCode}
+        </if>
+        <if test="parentId != null">
+            and parent_id=#{parentId}
+        </if>
+    </select>
+    <select id="getAreaById" resultType="org.springblade.energy.runningmanagement.station.vo.AreaTree"
+            parameterType="java.lang.String">
+        select area_code as areaCode ,area_name areaName , parent_id parentId from t_sys_area where is_deleted = 0
+        <if test="areaCode != null">
+            and area_code=#{areaCode}
+        </if>
+    </select>
+
+    <select id="getChildAreaList" resultType="org.springblade.energy.runningmanagement.station.vo.AreaTree"
+            parameterType="java.lang.String">
+        select area_code as areaCode ,area_name areaName , parent_id parentId from t_sys_area where is_deleted = 0
+        <if test="areaCode != null">
+            and parent_id=#{areaCode}
+        </if>
+    </select>
+
+</mapper>

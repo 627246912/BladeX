@@ -1,0 +1,33 @@
+DROP TABLE IF EXISTS t_product_ptype;
+CREATE TABLE `t_product_ptype` (
+  `stype` int(11) DEFAULT NULL COMMENT '1遥测2遥信3遥调4遥控5计算遥测6计算遥信',
+  `ptype` int(11) NOT NULL COMMENT '属性code',
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '名称',
+  `cname` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '简称',
+  `unit` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '单位',
+  `is_deleted` int(2) DEFAULT '0' COMMENT '是否删除',
+  `create_user` bigint(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  `id` bigint(22) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ptype` (`ptype`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品模型编码';
+
+DROP TABLE IF EXISTS t_model_pic;
+CREATE TABLE `t_model_pic` (
+  `id` BIGINT(20) NOT NULL,
+  `url` VARCHAR(400) COLLATE utf8mb4_bin NOT NULL,
+  `name` VARCHAR(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `create_user` BIGINT(64) DEFAULT NULL COMMENT '创建人',
+  `create_dept` BIGINT(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `update_user` BIGINT(64) DEFAULT NULL COMMENT '修改人',
+  `update_time` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `status` INT(2) DEFAULT NULL COMMENT '状态',
+  `is_deleted` INT(2) DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

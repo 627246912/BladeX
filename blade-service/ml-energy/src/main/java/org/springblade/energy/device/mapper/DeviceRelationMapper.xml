@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.device.mapper.DeviceRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="deviceRelationResultMap" type="org.springblade.energy.device.entity.DeviceRelation">
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="did" property="did"/>
+        <result column="pid" property="pid"/>
+    </resultMap>
+
+
+    <select id="selectDeviceRelationPage" resultMap="deviceRelationResultMap">
+        select * from t_device_relation where is_deleted = 0
+    </select>
+
+    <select id="getDeviceList" parameterType="org.springblade.energy.device.entity.DeviceRelation" resultMap="deviceRelationResultMap">
+        select * from t_device_relation where is_deleted = 0
+        <if test="stationId != null">
+            and station_id=#{stationId}
+        </if>
+        <if test="pid != null">
+            and pid=#{pid}
+        </if>
+        <if test="did != null">
+            and did=#{did}
+        </if>
+    </select>
+    <select id="getDevices" resultMap="deviceRelationResultMap"
+            parameterType="java.util.List">
+        select * from t_device_relation where is_deleted = 0
+        and did in
+        <foreach close=")" collection="list" index="i" item="item" open="(" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.diagram.mapper.DiagramProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="diagramProductResultMap" type="org.springblade.energy.diagram.entity.DiagramProduct">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="diagram_id" property="diagramId"/>
+        <result column="product_id" property="productId"/>
+
+        <result column="did" property="did"/>
+        <result column="rtuidcb" property="rtuidcb"/>
+        <result column="productcname" property="productcname"/>
+        <result column="pindex" property="pindex"/>
+        <result column="product_dtype" property="productDtype"/>
+        <result column="asset_code" property="assetCode"/>
+        <result column="mesolow" property="mesolow"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="grade" property="grade"/>
+        <result column="electric_typekey" property="electricTypekey" />
+
+    </resultMap>
+
+    <delete id="delDiagramProduct" parameterType="java.util.List">
+        delete from t_diagram_product where diagram_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="delDiagramProductById" parameterType="java.util.List">
+        delete from t_diagram_product where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectDiagramProductPage" resultMap="diagramProductResultMap">
+        select * from t_diagram_product where is_deleted = 0
+    </select>
+
+
+    <select id="queryDiagramProductDtype2" statementType="CALLABLE" resultType="java.util.Map" >
+       { CALL p_query_diagram_product_dtype2(
+       #{in_id,jdbcType=VARCHAR,mode=IN},
+        #{out_ids,jdbcType=VARCHAR,mode=OUT})
+        }
+    </select>
+
+    <select id="queryDiagramProductDtype3" statementType="CALLABLE" resultType="java.util.Map" >
+       { CALL p_query_diagram_product_dtype3(
+       #{in_id,jdbcType=VARCHAR,mode=IN},
+        #{out_ids,jdbcType=VARCHAR,mode=OUT})
+        }
+    </select>
+
+    <select id="queryDiagramProductByMap" resultType="org.springblade.energy.diagram.entity.DiagramProduct"
+            parameterType="java.util.Map">
+     SELECT p.* FROM `t_diagram_product` p ,`t_diagram` d
+     WHERE d.`id`=p.`diagram_id` AND d.`is_deleted`=0
+        <if test="stationId != null">
+            and d.station_id=#{stationId}
+        </if>
+        <if test="siteId != null">
+            and d.site_id=#{siteId}
+        </if>
+        <if test="diagramType != null">
+            and d.diagram_type=#{diagramType}
+        </if>
+        <if test="productDtype != null">
+            and p.product_dtype=#{productDtype}
+        </if>
+
+        <if test="diagramTypes != null">
+            and d.diagram_type in
+            <foreach collection="diagramTypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="productDtypes != null">
+            and p.product_dtype in
+            <foreach collection="productDtypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by p.`pindex` desc
+    </select>
+    <select id="querySonDiagramProduct" resultMap="diagramProductResultMap"
+            parameterType="map">
+        SELECT t.* FROM t_diagram_product t WHERE t.is_deleted=0
+        AND t.id IN (
+        SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.id,',',b.help_topic_id+1),',',-1) id
+        FROM (SELECT f_product_child(#{parentId}) AS id ) a
+        JOIN mysql.help_topic b
+        ON b.help_topic_id &lt; (LENGTH(a.id) - LENGTH(REPLACE(a.id,',',''))+1)
+        )
+        and t.diagram_id=#{diagramId}
+        <if test="productDtype != null">
+            and t.product_Dtype =#{productDtype}
+
+        </if>
+    <if test="productDtypes != null">
+            and t.product_Dtype in
+            <foreach collection="productDtypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getOneDiagramProductByRtuidcb" resultType="org.springblade.energy.diagram.entity.DiagramProduct"
+            parameterType="java.lang.String">
+                SELECT * FROM  t_diagram_product t WHERE
+                t.rtuidcb like CONCAT(CONCAT('%', #{rtuidcb}), '%')
+                LIMIT 1
+
+    </select>
+    <select id="getOneDiagramProductByDid" resultType="org.springblade.energy.diagram.entity.DiagramProduct"
+            parameterType="java.lang.String">
+                SELECT * FROM  t_diagram_product t WHERE
+                t.did like CONCAT(CONCAT('%', #{did}), '%')
+                LIMIT 1
+
+    </select>
+</mapper>

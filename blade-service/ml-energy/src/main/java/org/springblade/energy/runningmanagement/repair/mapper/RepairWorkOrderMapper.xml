@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.runningmanagement.repair.mapper.RepairWorkOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="repairWorkOrderResultMap" type="org.springblade.energy.runningmanagement.repair.entity.RepairWorkOrder">
+        <result column="id" property="id"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="repair_id" property="repairId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="send_uid" property="sendUid"/>
+        <result column="priority" property="priority"/>
+        <result column="send_type" property="sendType"/>
+        <result column="work_type" property="workType"/>
+        <result column="ask_hour" property="askHour"/>
+        <result column="duty_uid" property="dutyUid"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="start_time" property="startTime"/>
+        <result column="send_time" property="sendTime"/>
+        <result column="remark" property="remark"/>
+        <result column="equipment_id" property="equipmentId"/>
+        <result column="equipment_type_id" property="equipmentTypeId"/>
+    </resultMap>
+
+
+    <select id="selectRepairWorkOrderPage" resultMap="repairWorkOrderResultMap">
+        select * from t_repair_work_order where is_deleted = 0
+    </select>
+
+</mapper>

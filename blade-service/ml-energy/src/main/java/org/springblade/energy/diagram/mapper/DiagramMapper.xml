@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.diagram.mapper.DiagramMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="diagramResultMap" type="org.springblade.energy.diagram.entity.Diagram">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="diagram_type" property="diagramType"/>
+        <result column="diagram_name" property="diagramName"/>
+        <result column="did" property="did"/>
+        <result column="diagram_data" property="diagramData"/>
+        <result column="tm_type" property="tmType"/>
+        <result column="bk_image" property="bkImage"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, create_user, create_dept, create_time, update_user,update_time,status,is_deleted,
+    station_id,site_id,diagram_type,diagram_name,did
+  </sql>
+
+    <select id="selectDiagramPage" resultMap="diagramResultMap">
+        select <include refid="Base_Column_List"/> from t_diagram where is_deleted = 0
+    </select>
+    <select id="getDiagramDataById" resultType="java.lang.String" parameterType="java.lang.String">
+         select diagram_data diagramData from t_diagram where is_deleted = 0
+         and id=${id}
+
+    </select>
+    <select id="selectDiagramByMap" resultType="org.springblade.energy.diagram.entity.Diagram"
+            parameterType="java.util.Map">
+
+        select * from t_diagram where is_deleted = 0
+        <if test="id != null">
+            and id=#{id}
+        </if>
+        <if test="stationId != null">
+            and station_id=#{stationId}
+        </if>
+        <if test="siteId != null">
+            and site_id=#{siteId}
+        </if>
+        <if test="did != null">
+            and did=#{did}
+        </if>
+        <if test="diagramTypes != null">
+            and diagram_type in
+            <foreach collection="diagramTypes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+
+
+
+    <delete id="delDiagramById" parameterType="java.util.List">
+        delete from t_diagram where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
+</mapper>

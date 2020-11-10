@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.resource.mapper.ProductPtypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="productPtypeResultMap" type="org.springblade.resource.entity.ProductPtype">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="ptype" property="ptype"/>
+        <result column="stype" property="stype"/>
+        <result column="name" property="name"/>
+        <result column="cname" property="cname"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+
+    <select id="selectProductPtypePage" resultMap="productPtypeResultMap">
+        select * from t_product_ptype where is_deleted = 0
+        <if test="productPtype.id != null">
+            and id=#{productPtype.id}
+        </if>
+        <if test="productPtype.ptype != null">
+            and ptype=#{productPtype.ptype}
+        </if>
+        <if test="productPtype.name != null">
+            and name like CONCAT(CONCAT('%', #{productPtype.name}), '%')
+        </if>
+        <if test="productPtype.stype != null">
+            and stype=#{productPtype.stype}
+        </if>
+    </select>
+
+</mapper>

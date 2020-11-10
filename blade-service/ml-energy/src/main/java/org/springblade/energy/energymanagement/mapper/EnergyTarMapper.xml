@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.energy.energymanagement.mapper.EnergyTarMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="GasMeterResultMap" type="org.springblade.energy.energymanagement.entity.EnergyTar">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="tenant_id" property="tenantId"/>
+
+        <result column="station_id" property="stationId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="energy_type" property="energyType"/>
+        <result column="tar" property="tar"/>
+        <result column="type" property="type"/>
+
+    </resultMap>
+
+
+</mapper>

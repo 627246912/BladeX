@@ -1,0 +1,35 @@
+#服务器端口
+server:
+  port: 8020
+
+#数据源配置
+spring:
+  datasource:
+    url: ${blade.datasource.dev.url}
+    username: ${blade.datasource.dev.username}
+    password: ${blade.datasource.dev.password}
+#MQTT源配置
+mailian:
+  mqtt:
+    username: ${mqtt.dev.username}
+    password: ${mqtt.dev.password}
+    url: ${mqtt.dev.url}
+    client:
+      id: ${random.value}
+    default:
+      topic: ${mqtt.dev.default.topic}
+    keepAliveInterval: ${mqtt.dev.keepAliveInterval}
+    timeOut: ${mqtt.dev.timeOut}
+
+#项目服务名称
+  service:
+    idcard: ${pms.service.idcard}
+#网关请求路径
+push:
+  base:
+    url: ${push.base.url}
+
+#微电源动态系统网关订阅
+pms:
+  topic:
+    pmsgwinfo: ${wems.topic.pmsgwinfo}

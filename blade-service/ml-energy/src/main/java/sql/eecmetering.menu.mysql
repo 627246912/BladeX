@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1257921043016843270', 0, 'eecmetering', '重点能耗', 'menu', '/energy/eecmetering', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1257921043016843271', '1257921043016843270', 'eecmetering_add', '新增', 'add', '/energy/eecmetering/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1257921043016843272', '1257921043016843270', 'eecmetering_edit', '修改', 'edit', '/energy/eecmetering/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1257921043016843273', '1257921043016843270', 'eecmetering_delete', '删除', 'delete', '/api/ml-energy/eecmetering/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1257921043016843274', '1257921043016843270', 'eecmetering_view', '查看', 'view', '/energy/eecmetering/view', 'file-text', 4, 2, 2, 1, NULL, 0);

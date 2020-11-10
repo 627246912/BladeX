@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1274883816741298182', 0, 'powermeter', '能源管理-电能计量管账', 'menu', '/energy/powermeter', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1274883816741298183', '1274883816741298182', 'powermeter_add', '新增', 'add', '/energy/powermeter/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1274883816741298184', '1274883816741298182', 'powermeter_edit', '修改', 'edit', '/energy/powermeter/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1274883816741298185', '1274883816741298182', 'powermeter_delete', '删除', 'delete', '/api/ml-energy/powermeter/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1274883816741298186', '1274883816741298182', 'powermeter_view', '查看', 'view', '/energy/powermeter/view', 'file-text', 4, 2, 2, 1, NULL, 0);

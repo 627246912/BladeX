@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1262261150737895430', 0, 'diagramcamera', '系统图摄像头', 'menu', '/energy/diagramcamera', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1262261150737895431', '1262261150737895430', 'diagramcamera_add', '新增', 'add', '/energy/diagramcamera/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1262261150737895432', '1262261150737895430', 'diagramcamera_edit', '修改', 'edit', '/energy/diagramcamera/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1262261150737895433', '1262261150737895430', 'diagramcamera_delete', '删除', 'delete', '/api/ml-energy/diagramcamera/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1262261150737895434', '1262261150737895430', 'diagramcamera_view', '查看', 'view', '/energy/diagramcamera/view', 'file-text', 4, 2, 2, 1, NULL, 0);
